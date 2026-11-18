@@ -1,5 +1,7 @@
 # Souffle
 
+**En ligne : https://julienf68250-wq.github.io/souffle-app/** (publication automatique à chaque push sur main : le code reste dans ce dépôt privé, seule l'app compilée part dans le dépôt public `souffle-app`).
+
 Web app iPhone (PWA) pour le stress et l'endormissement. Données uniquement sur le téléphone (localStorage).
 
 - **Souffler** : cohérence cardiaque 5 s / 5 s (1, 3 ou 5 min), stress noté 0-10 avant et après.
