@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Respiration from './Respiration.jsx'
 import { ajouterNote, ajouterSession } from './stockage.js'
+import { recommander } from './contenu.js'
 import { deverrouillerAudio } from './audio.js'
 
 const RACCOURCI = 'Dormir'
@@ -9,15 +10,17 @@ const RACCOURCI = 'Dormir'
 export default function Dormir({ onFin }) {
   const [etape, setEtape] = useState('vider')
   const [texte, setTexte] = useState('')
+  const [technique] = useState(() => recommander('soir'))
+  const [aSouffle, setASouffle] = useState(false)
 
   const lancerNuit = () => {
-    ajouterSession({ type: 'nuit', t: Date.now() })
+    ajouterSession({ type: 'nuit', t: Date.now(), technique: aSouffle ? technique.id : undefined })
     window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(RACCOURCI)}`
     setTimeout(onFin, 800)
   }
 
   if (etape === 'respire')
-    return <Respiration duree={120} inspire={4} expire={6} onFin={() => setEtape('nuit')} onStop={() => setEtape('nuit')} />
+    return <Respiration technique={technique} duree={120} onFin={() => setEtape('nuit')} onStop={() => setEtape('nuit')} />
 
   if (etape === 'vider')
     return (
@@ -46,11 +49,14 @@ export default function Dormir({ onFin }) {
     return (
       <main className="ecran">
         <h2>Deux minutes de souffle lent ?</h2>
-        <p className="aide">Inspire 4 secondes, expire 6. L'expiration longue ralentit le cœur.</p>
+        <p className="aide">
+          <b>{technique.nom}.</b> {technique.pourquoi}
+        </p>
         <button
           className="principal"
           onClick={() => {
             deverrouillerAudio()
+            setASouffle(true)
             setEtape('respire')
           }}
         >

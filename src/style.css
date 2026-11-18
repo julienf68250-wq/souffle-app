@@ -132,7 +132,13 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
   border-top: 2px solid var(--trait);
   transition: background 0.15s, border-color 0.15s;
 }
-.echelle-btn:active { background: var(--trait); border-top-color: var(--ambre); }
+.echelle-btn {
+  background: linear-gradient(var(--eau), var(--eau)) bottom / 100% 0% no-repeat;
+  border-radius: 0 0 10px 10px;
+  transition: background-size 0.3s ease-out, color 0.3s, border-color 0.2s;
+}
+.echelle-btn:active { border-top-color: var(--ambre); }
+.echelle-btn.choisi { background-size: 100% 100%; color: var(--sur-eau); border-top-color: var(--eau); }
 .echelle-legende { display: flex; justify-content: space-between; color: var(--ardoise); font-size: 14px; margin-top: 4px; }
 
 /* ---------- Accueil : ciel + trois profondeurs d'eau ---------- */
@@ -147,11 +153,38 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
 .ciel .nom { font-size: 15px; color: var(--ardoise); font-weight: 600; margin: 0; }
 .ciel h1 { font-size: 40px; line-height: 1.08; max-width: 12ch; }
 
-.vague { display: block; width: 100%; height: 22px; margin-bottom: -1px; color: var(--b1); overflow: visible; }
+.vague { display: block; width: 100%; height: 22px; color: var(--b1); overflow: visible; }
 .vague path { fill: currentColor; }
+
+/* Ciel selon l'heure */
+:root { --ciel-haut: #e6ecea; }
+:root[data-ciel='aube'] { --ciel-haut: #ecdfe0; }
+:root[data-ciel='crepuscule'] { --ciel-haut: #ead6cc; }
+:root[data-ciel='nuit'] { --ciel-haut: #090c1a; }
+
+.ciel { position: relative; background: linear-gradient(to bottom, var(--ciel-haut), var(--ciel)); }
+.ciel > *:not(.astres) { position: relative; }
+/* Zone des astres limitée au haut du ciel : ne passe jamais sous les boutons */
+.astres { position: absolute; top: 0; left: 0; right: 0; height: 170px; pointer-events: none; }
+.soleil, .lune { position: absolute; width: 58px; height: 58px; translate: -50% -50%; overflow: visible; }
+.soleil circle { fill: #f6f2e6; filter: drop-shadow(0 0 14px #fff8e0); }
+:root[data-ciel='aube'] .soleil circle, :root[data-ciel='crepuscule'] .soleil circle { fill: #f4dcc0; filter: drop-shadow(0 0 16px #f6cfa6); }
+.lune circle { fill: #e3dccb; }
+.lune { filter: drop-shadow(0 0 10px rgba(227, 220, 203, 0.35)); }
+.etoile { position: absolute; border-radius: 50%; background: #e3dccb; opacity: 0.7; animation: scintille 6s ease-in-out infinite; }
+@keyframes scintille { 50% { opacity: 0.2; } }
+
+/* Horizons : bords d'eau qui dérivent lentement */
+.horizon { position: relative; height: 22px; margin-bottom: -1px; overflow: hidden; background: var(--ciel); }
+.horizon .vague { width: 200%; }
+.derive { animation: houle 46s linear infinite; }
+.horizon.interne { position: absolute; top: -21px; left: 0; right: 0; background: transparent; }
+.bande-2 .horizon .vague { color: var(--b2); animation-duration: 58s; animation-direction: reverse; }
+.bande-3 .horizon .vague { color: var(--b3); animation-duration: 71s; }
 
 .profondeurs { flex: 1; display: flex; flex-direction: column; }
 .bande {
+  position: relative;
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
@@ -176,6 +209,22 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
   opacity: 0.85;
 }
 .bande-3 .lien { color: inherit; opacity: 0.7; align-self: flex-start; text-decoration-color: currentColor; }
+
+.reveil {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--trait);
+  border-radius: 14px;
+  font: 400 22px/1.2 var(--serif);
+  color: var(--ambre);
+}
+.reveil span { font: 15px/1.4 var(--sans); color: var(--ardoise); }
+
+.annonce { border-left: 2px solid var(--ambre); padding-left: 14px; }
+.annonce p { margin: 0; font-size: 16px; max-width: 40ch; }
+.annonce .lien { padding: 8px 0 0; }
 
 .matin { display: flex; flex-direction: column; gap: 10px; }
 .matin p { margin: 0; font: 22px/1.2 var(--serif); }
@@ -207,6 +256,9 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
   animation: houle 9s linear infinite;
 }
 @keyframes houle { to { transform: translateX(-50%); } }
+.eau .vague.arriere { top: -30px; opacity: 0.4; animation-duration: 14s; animation-direction: reverse; }
+.maree { animation: entree 0.7s ease-out; }
+@keyframes entree { from { opacity: 0; } }
 
 .mot {
   position: absolute;
@@ -220,6 +272,8 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
 }
 .mot-eau { color: var(--sur-eau); clip-path: inset(calc(100% - var(--haut)) 0 0 0); }
 
+.mot.long { font-size: clamp(40px, 12vw, 68px); text-align: center; padding: 0 24px; }
+
 .maree-bas {
   position: absolute;
   left: 0;
@@ -228,10 +282,17 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
   padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 28px);
   color: var(--sur-eau);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 18px;
 }
+.maree-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.intro { margin: 0; font: 17px/1.45 var(--serif); max-width: 36ch; }
+.intro b { font-weight: 600; }
+
+/* Réveil nocturne : tout est atténué */
+.maree.sombre { filter: brightness(0.5); }
+.sombre-fin { background: #07090f; color: #8c8578; }
+.sombre-fin .aide, .sombre-fin .lien { color: #5f5b55; }
 .maree-bas .reste { font-variant-numeric: tabular-nums; font-size: 17px; opacity: 0.8; }
 .maree-bas .actions { display: flex; gap: 18px; }
 .maree-bas button { font-size: 16px; opacity: 0.85; text-decoration: underline; text-underline-offset: 4px; }
@@ -252,20 +313,46 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
 /* ---------- Effet ---------- */
 .constat { font: 400 30px/1.2 var(--serif); margin: 0; max-width: 18ch; }
 .constat b { font-weight: 600; }
-.historique { display: flex; flex-direction: column; gap: 12px; margin: 8px 0; }
-.ligne { display: grid; grid-template-columns: 84px 1fr 44px; align-items: center; gap: 12px; font-size: 14px; }
-.ligne-date { color: var(--ardoise); }
-.ligne-val { text-align: right; font-variant-numeric: tabular-nums; }
-.barres { display: flex; flex-direction: column; gap: 3px; }
-.barre { height: 5px; border-radius: 3px; min-width: 3px; }
-.barre.avant { background: var(--trait); }
-.barre.apres { background: var(--eau); }
+/* Échelle de marée : l'eau = stress après, le trait = stress avant */
+.marees { margin: 6px 0; }
+.marees-graphe { display: flex; gap: 10px; height: 150px; }
+.marees-axe { display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; color: var(--ardoise); font-variant-numeric: tabular-nums; }
+.marees-colonnes { flex: 1; display: flex; align-items: stretch; gap: 6px; }
+.colonne {
+  position: relative;
+  flex: 1;
+  max-width: 26px;
+  border-radius: 6px 6px 3px 3px;
+  background: var(--trait);
+  background: color-mix(in srgb, var(--trait) 45%, transparent);
+  overflow: hidden;
+}
+.colonne-eau { position: absolute; left: 0; right: 0; bottom: 0; background: var(--eau); border-radius: 3px 3px 0 0; }
+.colonne-repere { position: absolute; left: 0; right: 0; height: 3px; margin-bottom: -1.5px; background: var(--encre); }
+.marees-legende { display: flex; gap: 18px; margin: 10px 0 0; font-size: 14px; color: var(--ardoise); }
+.pastille { display: inline-block; width: 12px; vertical-align: middle; margin-right: 4px; }
+.pastille-repere { height: 3px; background: var(--encre); }
+.pastille-eau { height: 10px; border-radius: 2px; background: var(--eau); }
+
+.techniques { display: flex; flex-direction: column; }
+.techniques h3 { font: 600 15px/1.4 var(--sans); color: var(--ardoise); margin: 8px 0 4px; }
+.techniques .aide { margin-top: 10px; }
+.tech-ligne {
+  display: grid;
+  grid-template-columns: 1fr auto 48px;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--trait);
+  font-size: 16px;
+}
+.tech-n { color: var(--ardoise); }
+.tech-b { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
 
 /* ---------- Raccourci ---------- */
 .config summary { cursor: pointer; color: var(--ardoise); font-size: 16px; padding: 6px 0; }
 .config ol { padding-left: 22px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .eau .vague { animation: none; }
-  .bande, html, body { transition: none; }
+  .eau .vague, .derive, .etoile, .maree { animation: none; }
+  .bande, html, body, .echelle-btn { transition: none; }
 }

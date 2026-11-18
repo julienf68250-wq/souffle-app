@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "node scripts/verifier-contenu.mjs && vite build",
+    "verifier": "node scripts/verifier-contenu.mjs",
     "preview": "vite preview --host",
     "icones": "node scripts/icones.mjs"
   },

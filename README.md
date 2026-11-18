@@ -5,7 +5,12 @@ Web app iPhone (PWA) pour le stress et l'endormissement. Données uniquement sur
 - **Souffler** : cohérence cardiaque 5 s / 5 s (1, 3 ou 5 min), stress noté 0-10 avant et après.
 - **Vider ma tête** : noter ce qui tourne en boucle, cocher « C'est fait » plus tard.
 - **Dormir** : vider sa tête, 2 min de souffle 4 s / 6 s, puis lancement du raccourci iOS « Dormir » (mode Sommeil + sons d'arrière-plan).
-- **Mon effet** : baisse moyenne du stress par séance, note moyenne des nuits (posée chaque matin).
+- **Mon effet** : échelle de marée (stress avant/après), efficacité par technique, note des nuits, progression hebdomadaire.
+- **Réveil nocturne** (23 h - 6 h) : 5 min très lentes, écran assombri, rien à noter.
+- **Choix automatique** : Souffle choisit la technique (stress ≥ 7 → soupir physiologique ; sinon nouveauté, puis la plus efficace sur toi). Une technique se débloque chaque semaine.
+- **Son** : mer générée qui suit la respiration, ou pluie avec cloche douce. Diagnostic : `window.__souffleAudio.rms()` dans la console.
+
+Enrichir le contenu : voir [ENRICHIR.md](ENRICHIR.md) (un seul fichier JSON, vérifié avant chaque build).
 
 Design : « la marée ». Jour = brume de lac, nuit (21 h - 6 h) = indigo. Polices Newsreader + Hanken Grotesk embarquées.
 

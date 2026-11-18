@@ -2,32 +2,37 @@ import { useState } from 'react'
 import Echelle from './Echelle.jsx'
 import Respiration from './Respiration.jsx'
 import { ajouterSession } from './stockage.js'
+import { moment, recommander } from './contenu.js'
 import { deverrouillerAudio } from './audio.js'
 
-// Séance de jour : note avant, cohérence cardiaque 5 s / 5 s, note après.
+// Séance : note avant → Souffle choisit la technique → marée → note après.
 export default function Seance({ duree, onFin }) {
   const [etape, setEtape] = useState('avant')
   const [avant, setAvant] = useState(null)
+  const [technique, setTechnique] = useState(null)
 
   const commencer = (v) => {
     deverrouillerAudio()
     setAvant(v)
+    setTechnique(recommander(moment(), v))
     setEtape('respire')
   }
   const terminer = (apres) => {
-    ajouterSession({ type: 'souffle', t: Date.now(), duree, avant, apres })
+    ajouterSession({ type: 'souffle', t: Date.now(), technique: technique?.id, duree, avant, apres })
     onFin()
   }
 
   if (etape === 'respire')
-    return <Respiration duree={duree} inspire={5} expire={5} onFin={() => setEtape('apres')} onStop={() => setEtape('apres')} />
+    return <Respiration technique={technique} duree={duree} onFin={() => setEtape('apres')} onStop={() => setEtape('apres')} />
 
   const avantEtape = etape === 'avant'
   return (
     <main className="ecran">
-      <h2>{avantEtape ? 'Ton stress, là, maintenant ?' : 'Et maintenant ?'}</h2>
+      <h2>{avantEtape ? 'Ton stress, là, maintenant ?' : 'C’est fait. Et maintenant ?'}</h2>
       <p className="aide">
-        {avantEtape ? 'Touche un chiffre, la séance démarre.' : 'Note-le, même si rien n’a bougé. C’est comme ça que tu sauras si ça marche.'}
+        {avantEtape
+          ? 'Touche un chiffre : Souffle choisit la technique et démarre.'
+          : `Après « ${technique.nom} ». Note-le, même si rien n’a bougé : c’est comme ça que Souffle apprend ce qui marche sur toi.`}
       </p>
       <Echelle onChoix={avantEtape ? commencer : terminer} gauche="calme" droite="à bout" />
       <div className="pied">

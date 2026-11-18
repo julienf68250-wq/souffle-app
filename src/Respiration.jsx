@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import Vague from './Vague.jsx'
-import { CLES, ecrire, lire } from './stockage.js'
-import { deverrouillerAudio, tonalite } from './audio.js'
+import { CONTENU, sonParId } from './contenu.js'
+import { ecrireSon, lireSon } from './stockage.js'
+import { arreterAmbiance, cloche, demarrerAmbiance, deverrouillerAudio, houle } from './audio.js'
 
-// La marée : l'eau monte à l'inspiration, redescend à l'expiration.
-// Durée arrondie au cycle complet pour finir sur une expiration.
-export default function Respiration({ duree, inspire, expire, onFin, onStop }) {
-  const cycle = inspire + expire
-  const total = Math.ceil(duree / cycle) * cycle
+// La marée : l'eau suit les phases de la technique (inspire, pause, expire…).
+// La durée est arrondie au cycle complet pour finir à vide.
+export default function Respiration({ technique, duree, sombre = false, onFin, onStop }) {
+  const phases = technique.phases
+  const cycle = phases.reduce((s, p) => s + p.duree, 0)
+  const total = Math.max(1, Math.ceil(duree / cycle)) * cycle
   const debut = useRef(performance.now())
   const finRef = useRef(onFin)
   finRef.current = onFin
   const [ecoule, setEcoule] = useState(0)
-  const [son, setSon] = useState(() => lire(CLES.son, false))
+  const [sonId, setSonId] = useState(lireSon)
+  const son = sonParId(sonId)
 
   useEffect(() => {
     let id
@@ -36,39 +39,65 @@ export default function Respiration({ duree, inspire, expire, onFin, onStop }) {
     return () => verrou?.release().catch(() => {})
   }, [])
 
-  const p = ecoule % cycle
-  const enInspire = p < inspire
-  const avance = enInspire ? p / inspire : 1 - (p - inspire) / expire
-  const niveau = (1 - Math.cos(Math.PI * avance)) / 2
+  // Position dans le cycle
+  const n = Math.floor(ecoule / cycle)
+  let r = ecoule - n * cycle
+  let i = 0
+  while (i < phases.length - 1 && r >= phases[i].duree) {
+    r -= phases[i].duree
+    i++
+  }
+  const phase = phases[i]
+  const de = (i === 0 ? phases[phases.length - 1] : phases[i - 1]).vers
+  const f = Math.min(1, r / phase.duree)
+  const niveau = de + (phase.vers - de) * ((1 - Math.cos(Math.PI * f)) / 2)
+  const indexPhase = n * phases.length + i
   const reste = Math.max(0, Math.ceil(total - ecoule))
-  const mot = enInspire ? 'Inspire' : 'Expire'
 
   useEffect(() => {
-    if (son) tonalite(enInspire)
-  }, [enInspire, son])
+    demarrerAmbiance(son)
+    return () => arreterAmbiance()
+  }, [sonId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const basculerSon = () => {
+  useEffect(() => {
+    if (!son) return
+    if (son.houle) houle(phase.vers, phase.duree)
+    else if (phase.vers !== de) cloche(phase.vers > de)
+  }, [indexPhase, sonId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const changerSon = () => {
     deverrouillerAudio()
-    setSon((s) => {
-      ecrire(CLES.son, !s)
-      return !s
-    })
+    const ids = [...CONTENU.sons.map((s) => s.id), null]
+    const suivant = ids[(ids.indexOf(sonId) + 1) % ids.length]
+    ecrireSon(suivant)
+    setSonId(suivant)
   }
 
+  const introOpacite = ecoule < cycle ? 1 : Math.max(0, 1 - (ecoule - cycle) / 1.5)
+  const long = phase.mot.length > 9 ? ' long' : ''
+
   return (
-    <main className="maree" style={{ '--l': niveau }}>
+    <main className={`maree${sombre ? ' sombre' : ''}`} style={{ '--l': niveau }}>
       <div className="eau">
+        <Vague className="vague arriere" />
         <Vague />
       </div>
-      <div className="mot" aria-live="polite">{mot}</div>
-      <div className="mot mot-eau" aria-hidden="true">{mot}</div>
+      <div className={`mot${long}`} aria-live="polite">{phase.mot}</div>
+      <div className={`mot mot-eau${long}`} aria-hidden="true">{phase.mot}</div>
       <div className="maree-bas">
-        <span className="reste">
-          {Math.floor(reste / 60)}:{String(reste % 60).padStart(2, '0')}
-        </span>
-        <div className="actions">
-          <button onClick={basculerSon}>{son ? 'Couper le son' : 'Son doux'}</button>
-          <button onClick={onStop}>Arrêter</button>
+        {introOpacite > 0 && (
+          <p className="intro" style={{ opacity: introOpacite }}>
+            <b>{technique.nom}.</b> {technique.pourquoi}
+          </p>
+        )}
+        <div className="maree-ligne">
+          <span className="reste">
+            {Math.floor(reste / 60)}:{String(reste % 60).padStart(2, '0')}
+          </span>
+          <div className="actions">
+            <button onClick={changerSon}>{son ? `Son : ${son.nom}` : 'Son coupé'}</button>
+            <button onClick={onStop}>Arrêter</button>
+          </div>
         </div>
       </div>
     </main>

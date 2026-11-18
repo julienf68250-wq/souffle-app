@@ -1,0 +1,97 @@
+{
+  "version": 2,
+  "nouveautes": [
+    {
+      "version": 2,
+      "texte": "Souffle choisit maintenant la technique pour toi, selon l'heure, ton stress et ce qui marche le mieux sur toi. Une nouvelle technique arrive chaque semaine, et la mer suit ta respiration."
+    }
+  ],
+  "techniques": [
+    {
+      "id": "coherence",
+      "nom": "Cohérence cardiaque",
+      "pourquoi": "Six respirations par minute : le rythme où le cœur et le souffle se calent l'un sur l'autre.",
+      "semaine": 0,
+      "moments": ["jour", "soir"],
+      "phases": [
+        { "mot": "Inspire", "duree": 5, "vers": 1 },
+        { "mot": "Expire", "duree": 5, "vers": 0 }
+      ]
+    },
+    {
+      "id": "soupir",
+      "nom": "Soupir physiologique",
+      "pourquoi": "Deux inspirations par le nez, une longue expiration par la bouche : un des moyens les plus rapides de faire redescendre un pic de stress.",
+      "semaine": 0,
+      "urgence": true,
+      "moments": ["jour"],
+      "phases": [
+        { "mot": "Inspire", "duree": 2, "vers": 0.75 },
+        { "mot": "Encore un peu", "duree": 1, "vers": 1 },
+        { "mot": "Expire tout", "duree": 6, "vers": 0 }
+      ]
+    },
+    {
+      "id": "expiration-longue",
+      "nom": "Expiration longue",
+      "pourquoi": "Expirer plus longtemps qu'on inspire ralentit le cœur et prépare au sommeil.",
+      "semaine": 0,
+      "moments": ["soir", "reveil"],
+      "phases": [
+        { "mot": "Inspire", "duree": 4, "vers": 1 },
+        { "mot": "Expire", "duree": 6, "vers": 0 }
+      ]
+    },
+    {
+      "id": "carree",
+      "nom": "Respiration carrée",
+      "pourquoi": "Quatre temps égaux et deux pauses : utile pour retrouver de la concentration avant une réunion.",
+      "semaine": 1,
+      "moments": ["jour"],
+      "phases": [
+        { "mot": "Inspire", "duree": 4, "vers": 1 },
+        { "mot": "Garde l'air", "duree": 4, "vers": 1 },
+        { "mot": "Expire", "duree": 4, "vers": 0 },
+        { "mot": "Reste vide", "duree": 4, "vers": 0 }
+      ]
+    },
+    {
+      "id": "4-7-8",
+      "nom": "4-7-8",
+      "pourquoi": "Une longue pause pleine puis huit secondes d'expiration : un rythme lent qui occupe l'esprit et l'éloigne des pensées.",
+      "semaine": 2,
+      "moments": ["soir", "reveil"],
+      "phases": [
+        { "mot": "Inspire", "duree": 4, "vers": 1 },
+        { "mot": "Garde l'air", "duree": 7, "vers": 1 },
+        { "mot": "Expire", "duree": 8, "vers": 0 }
+      ]
+    },
+    {
+      "id": "fredonner",
+      "nom": "Expiration fredonnée",
+      "pourquoi": "Expirer bouche fermée en fredonnant « mmm » allonge l'expiration et fait vibrer la gorge : un calmant simple et discret.",
+      "semaine": 3,
+      "moments": ["jour", "soir"],
+      "phases": [
+        { "mot": "Inspire", "duree": 4, "vers": 1 },
+        { "mot": "Mmm…", "duree": 7, "vers": 0 }
+      ]
+    },
+    {
+      "id": "vague-lente",
+      "nom": "Vague lente",
+      "pourquoi": "Moins de quatre respirations par minute, très amples : pour les réveils nocturnes, quand le corps est prêt à dormir mais pas la tête.",
+      "semaine": 4,
+      "moments": ["reveil"],
+      "phases": [
+        { "mot": "Inspire", "duree": 6, "vers": 1 },
+        { "mot": "Laisse aller", "duree": 10, "vers": 0 }
+      ]
+    }
+  ],
+  "sons": [
+    { "id": "mer", "nom": "Mer", "bruit": "brun", "coupure": [350, 1800], "volume": [0.2, 0.7], "houle": true },
+    { "id": "pluie", "nom": "Pluie", "bruit": "rose", "coupure": [5000, 5000], "volume": [0.65, 0.65], "houle": false }
+  ]
+}

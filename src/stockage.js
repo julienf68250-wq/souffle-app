@@ -3,12 +3,14 @@ export const CLES = {
   sessions: 'souffle.sessions',
   notes: 'souffle.notes',
   son: 'souffle.son',
+  debut: 'souffle.debut',
+  versionVue: 'souffle.version-vue',
 }
 
 export function lire(cle, defaut) {
   try {
     const v = localStorage.getItem(cle)
-    return v ? JSON.parse(v) : defaut
+    return v == null ? defaut : JSON.parse(v)
   } catch {
     return defaut
   }
@@ -22,7 +24,7 @@ export function ecrire(cle, valeur) {
   }
 }
 
-// Sessions : { t, type: 'souffle' | 'nuit', duree?, avant?, apres?, note? }
+// Sessions : { t, type: 'souffle' | 'nuit' | 'reveil', technique?, duree?, avant?, apres?, note? }
 export const sessions = () => lire(CLES.sessions, [])
 export const ajouterSession = (s) => ecrire(CLES.sessions, [...sessions(), s])
 export const majSession = (t, champs) =>
@@ -33,6 +35,15 @@ export const notes = () => lire(CLES.notes, [])
 export const ajouterNote = (texte) =>
   ecrire(CLES.notes, [...notes(), { id: Date.now(), t: Date.now(), texte }])
 export const supprimerNote = (id) => ecrire(CLES.notes, notes().filter((n) => n.id !== id))
+
+// Ambiance sonore choisie (id d'un son de contenu.json, ou null = silence). La mer par défaut.
+export function lireSon() {
+  const v = lire(CLES.son, 'mer')
+  if (v === true) return 'mer' // ancienne v1
+  if (v === false) return null
+  return v
+}
+export const ecrireSon = (id) => ecrire(CLES.son, id)
 
 // Nuit d'hier sans note du matin (pour la question « ta nuit, de 0 à 10 ? »)
 export function nuitANoter() {
