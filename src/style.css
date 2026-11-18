@@ -1,0 +1,271 @@
+/* Souffle : la respiration comme une marée.
+   Jour = brume de lac. Nuit (21 h - 6 h) = indigo, texte couleur lune, peu de lumière. */
+:root {
+  --ciel: #dde4e3;
+  --encre: #1f2d33;
+  --ardoise: #56696d;
+  --trait: rgba(31, 45, 51, 0.2);
+  --b1: #a9c3c2;
+  --b2: #5f8d91;
+  --b3: #2d5960;
+  --sur-b1: #1f2d33;
+  --sur-b2: #f1f5f4;
+  --sur-b3: #f1f5f4;
+  --eau: #3b7178;
+  --sur-eau: #f1f5f4;
+  --ambre: #3b7178;
+  --serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --sans: 'Hanken Grotesk Variable', -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+:root.nuit {
+  --ciel: #121729;
+  --encre: #d8d1c1;
+  --ardoise: #8a8da2;
+  --trait: rgba(216, 209, 193, 0.18);
+  --b1: #273052;
+  --b2: #1e2644;
+  --b3: #161c34;
+  --sur-b1: #d8d1c1;
+  --sur-b2: #d8d1c1;
+  --sur-b3: #e2bf91;
+  --eau: #28335c;
+  --sur-eau: #e2bf91;
+  --ambre: #b58c5c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  background: var(--ciel);
+  color: var(--encre);
+  font: 17px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.8s, color 0.8s;
+}
+#root { min-height: 100dvh; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  text-align: inherit;
+}
+button:disabled { opacity: 0.35; cursor: default; }
+:focus-visible { outline: 2px solid var(--ambre); outline-offset: 3px; }
+
+h1, h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+h2 { font-size: 30px; line-height: 1.15; }
+.aide { color: var(--ardoise); margin: 0; font-size: 16px; max-width: 34ch; }
+
+/* ---------- Écrans simples (questions, notes, effet) ---------- */
+.ecran {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top, 0px) + 40px) 24px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.ecran .pied { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+
+.principal {
+  background: var(--eau);
+  color: var(--sur-eau);
+  padding: 17px 22px;
+  border-radius: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+.secondaire {
+  padding: 15px 22px;
+  border-radius: 14px;
+  border: 1.5px solid var(--trait);
+  text-align: center;
+}
+.lien {
+  color: var(--ardoise);
+  padding: 12px 0;
+  text-decoration: underline;
+  text-decoration-color: var(--trait);
+  text-underline-offset: 4px;
+  font-size: 16px;
+}
+.principal.grand { padding: 24px; font-size: 21px; }
+
+textarea {
+  width: 100%;
+  font: 19px/1.6 var(--serif);
+  color: var(--encre);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--trait);
+  padding: 8px 0;
+  resize: none;
+  /* lignes de cahier */
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.6em - 1px), var(--trait) calc(1.6em - 1px) 1.6em);
+  background-attachment: local;
+}
+textarea:focus { outline: none; border-bottom-color: var(--ambre); }
+textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
+
+/* ---------- Échelle de marée 0-10 ---------- */
+.echelle-grille { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px 4px; }
+.echelle-btn {
+  font: 26px/1 var(--serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  text-align: center;
+  padding: 14px 0 12px;
+  border-top: 2px solid var(--trait);
+  transition: background 0.15s, border-color 0.15s;
+}
+.echelle-btn:active { background: var(--trait); border-top-color: var(--ambre); }
+.echelle-legende { display: flex; justify-content: space-between; color: var(--ardoise); font-size: 14px; margin-top: 4px; }
+
+/* ---------- Accueil : ciel + trois profondeurs d'eau ---------- */
+.accueil { min-height: 100dvh; display: flex; flex-direction: column; }
+.ciel {
+  padding: calc(env(safe-area-inset-top, 0px) + 36px) 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 560px;
+}
+.ciel .nom { font-size: 15px; color: var(--ardoise); font-weight: 600; margin: 0; }
+.ciel h1 { font-size: 40px; line-height: 1.08; max-width: 12ch; }
+
+.vague { display: block; width: 100%; height: 22px; margin-bottom: -1px; color: var(--b1); overflow: visible; }
+.vague path { fill: currentColor; }
+
+.profondeurs { flex: 1; display: flex; flex-direction: column; }
+.bande {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 22px 24px;
+  transition: flex-grow 0.6s;
+}
+.bande.haute { flex-grow: 2.2; }
+.bande-1 { background: var(--b1); color: var(--sur-b1); }
+.bande-2 { background: var(--b2); color: var(--sur-b2); }
+.bande-3 { background: var(--b3); color: var(--sur-b3); padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); }
+
+.bande-action { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 4px; width: 100%; }
+.bande-action strong { font: 400 32px/1.1 var(--serif); }
+.bande-action span { font-size: 15px; opacity: 0.8; }
+.durees { display: flex; gap: 10px; margin-top: 14px; }
+.durees button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-size: 15px;
+  opacity: 0.85;
+}
+.bande-3 .lien { color: inherit; opacity: 0.7; align-self: flex-start; text-decoration-color: currentColor; }
+
+.matin { display: flex; flex-direction: column; gap: 10px; }
+.matin p { margin: 0; font: 22px/1.2 var(--serif); }
+
+/* ---------- Respiration : la marée ---------- */
+.maree {
+  --l: 0;
+  --base: calc(150px + env(safe-area-inset-bottom, 0px));
+  --haut: calc(var(--base) + (100% - var(--base) - 60px) * var(--l));
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ciel);
+}
+.eau {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--haut);
+  background: var(--eau);
+}
+.eau .vague {
+  position: absolute;
+  top: -21px;
+  left: 0;
+  width: 200%;
+  color: var(--eau);
+  animation: houle 9s linear infinite;
+}
+@keyframes houle { to { transform: translateX(-50%); } }
+
+.mot {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 400 clamp(56px, 18vw, 96px) / 1 var(--serif);
+  letter-spacing: -0.02em;
+  color: var(--encre);
+  pointer-events: none;
+}
+.mot-eau { color: var(--sur-eau); clip-path: inset(calc(100% - var(--haut)) 0 0 0); }
+
+.maree-bas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  color: var(--sur-eau);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.maree-bas .reste { font-variant-numeric: tabular-nums; font-size: 17px; opacity: 0.8; }
+.maree-bas .actions { display: flex; gap: 18px; }
+.maree-bas button { font-size: 16px; opacity: 0.85; text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Notes rangées ---------- */
+.notes { display: flex; flex-direction: column; }
+.notes h3 { font: 600 15px/1.4 var(--sans); color: var(--ardoise); margin: 8px 0 4px; }
+.note {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--trait);
+}
+.note span { flex: 1; font: 18px/1.45 var(--serif); white-space: pre-wrap; overflow-wrap: anywhere; }
+.note button { color: var(--ardoise); font-size: 15px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Effet ---------- */
+.constat { font: 400 30px/1.2 var(--serif); margin: 0; max-width: 18ch; }
+.constat b { font-weight: 600; }
+.historique { display: flex; flex-direction: column; gap: 12px; margin: 8px 0; }
+.ligne { display: grid; grid-template-columns: 84px 1fr 44px; align-items: center; gap: 12px; font-size: 14px; }
+.ligne-date { color: var(--ardoise); }
+.ligne-val { text-align: right; font-variant-numeric: tabular-nums; }
+.barres { display: flex; flex-direction: column; gap: 3px; }
+.barre { height: 5px; border-radius: 3px; min-width: 3px; }
+.barre.avant { background: var(--trait); }
+.barre.apres { background: var(--eau); }
+
+/* ---------- Raccourci ---------- */
+.config summary { cursor: pointer; color: var(--ardoise); font-size: 16px; padding: 6px 0; }
+.config ol { padding-left: 22px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .eau .vague { animation: none; }
+  .bande, html, body { transition: none; }
+}
