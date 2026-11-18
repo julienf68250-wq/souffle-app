@@ -1,9 +1,10 @@
-Enregistrements sous licence Creative Commons 0 (domaine public), Freesound.org.
-Extraits, volume harmonisé et réencodés en AAC pour Souffle.
+Enregistrements originaux (WAV, sans perte) du domaine public, via radio aporee / Internet Archive.
+Extraits choisis par mesure de régularité, volume harmonisé, encodés en AAC 256 kbit/s pour Souffle.
 
-mer.m4a   : « Ocean_coast_04_092025_0659AM » par YevgVerh
-            https://freesound.org/people/YevgVerh/sounds/827530/
-pluie.m4a : « Rain sounds1_unedited.wav » par AmiableWookie
-            https://freesound.org/people/AmiableWookie/sounds/651676/
-bol.m4a   : « singing bowl strike sound » par inoshirodesign
-            https://freesound.org/people/inoshirodesign/sounds/271370/
+mer.m4a   : « Ocean Waves », Chuburná (Yucatán, Mexique), par Josue Amador (Zoom H8, stéréo, 48 kHz)
+            https://archive.org/details/aporee_61695_70974 (Public Domain Mark 1.0)
+pluie.m4a : « Light rain in the forest », Kiel (Allemagne), Tascam DR-100 + micros binauraux Soundman OKM II
+            https://archive.org/details/aporee_43527_49569 (Public Domain Mark 1.0)
+
+Bol chantant : synthétisé par l'app (stéréo, calculé sur l'appareil).
+Bruits brun et rose : générés par l'app (stéréo décorrélée).
