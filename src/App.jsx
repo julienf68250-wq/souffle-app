@@ -7,9 +7,10 @@ import Effet from './Effet.jsx'
 import Echelle from './Echelle.jsx'
 import Vague from './Vague.jsx'
 import Astre, { periode } from './Ciel.jsx'
+import Installer from './Installer.jsx'
 import { ajouterSession, majSession, notes, nuitANoter, sessions } from './stockage.js'
 import { marquerNouveautesVues, nouveautesAAfficher, nouveautesNonEssayees, recommander } from './contenu.js'
-import { deverrouillerAudio } from './audio.js'
+import { preparerSeance } from './pleinEcran.js'
 
 const estNuit = () => {
   const h = new Date().getHours()
@@ -70,7 +71,7 @@ function Accueil({ nuit, aller }) {
   const neuve = nouveautesNonEssayees(nuit ? 'soir' : 'jour')[0]
 
   const reveil = () => {
-    deverrouillerAudio()
+    preparerSeance()
     const technique = recommander('reveil')
     ajouterSession({ type: 'reveil', t: Date.now(), technique: technique.id })
     aller({ nom: 'reveil', technique })
@@ -80,6 +81,7 @@ function Accueil({ nuit, aller }) {
     <main className="accueil">
       <header className="ciel">
         <Astre />
+        <Installer />
         <p className="nom">Souffle</p>
         <h1>{SALUTS[periode()]}</h1>
 

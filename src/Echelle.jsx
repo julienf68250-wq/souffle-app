@@ -1,10 +1,12 @@
 import { useState } from 'react'
 
 // Note de 0 à 10 en un seul geste : le chiffre touché se remplit d'eau, puis on avance.
-export default function Echelle({ onChoix, gauche, droite }) {
+// auToucher s'exécute dans le geste lui-même (son et plein écran l'exigent), avant l'animation.
+export default function Echelle({ onChoix, auToucher, gauche, droite }) {
   const [choisi, setChoisi] = useState(null)
   const choisir = (i) => {
     if (choisi != null) return
+    auToucher?.()
     setChoisi(i)
     setTimeout(() => onChoix(i), 320)
   }

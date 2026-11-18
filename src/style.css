@@ -46,7 +46,17 @@ html, body {
   -webkit-font-smoothing: antialiased;
   transition: background 0.8s, color 0.8s;
 }
+/* Comportement d'app : pas de rebond qui montre le fond, pas de sélection ni de menu à l'appui long */
+html, body { overscroll-behavior: none; }
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+textarea { -webkit-user-select: text; user-select: text; }
 #root { min-height: 100dvh; }
+
+/* Bandeau d'installation (Safari iPhone uniquement) */
+.installer { border: 1.5px solid var(--trait); border-radius: 14px; padding: 14px 16px 6px; background: color-mix(in srgb, var(--ciel) 70%, transparent); }
+.installer p { margin: 0; font-size: 15px; line-height: 1.5; }
+.installer .lien { padding: 8px 0; font-size: 15px; }
+.icone-partager { width: 15px; height: 18px; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 button {
   font: inherit;

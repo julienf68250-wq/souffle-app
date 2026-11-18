@@ -3,7 +3,7 @@ import Echelle from './Echelle.jsx'
 import Respiration from './Respiration.jsx'
 import { ajouterSession } from './stockage.js'
 import { moment, recommander } from './contenu.js'
-import { deverrouillerAudio } from './audio.js'
+import { preparerSeance } from './pleinEcran.js'
 
 // Séance : note avant → Souffle choisit la technique → marée → note après.
 export default function Seance({ duree, onFin }) {
@@ -12,7 +12,7 @@ export default function Seance({ duree, onFin }) {
   const [technique, setTechnique] = useState(null)
 
   const commencer = (v) => {
-    deverrouillerAudio()
+    preparerSeance()
     setAvant(v)
     setTechnique(recommander(moment(), v))
     setEtape('respire')
@@ -34,7 +34,12 @@ export default function Seance({ duree, onFin }) {
           ? 'Touche un chiffre : Souffle choisit la technique et démarre.'
           : `Après « ${technique.nom} ». Note-le, même si rien n’a bougé : c’est comme ça que Souffle apprend ce qui marche sur toi.`}
       </p>
-      <Echelle onChoix={avantEtape ? commencer : terminer} gauche="calme" droite="à bout" />
+      <Echelle
+        onChoix={avantEtape ? commencer : terminer}
+        auToucher={avantEtape ? preparerSeance : undefined}
+        gauche="calme"
+        droite="à bout"
+      />
       <div className="pied">
         <button className="lien" onClick={() => (avantEtape ? commencer(null) : terminer(null))}>
           {avantEtape ? 'Démarrer sans noter' : 'Terminer sans noter'}

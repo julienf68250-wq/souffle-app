@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Respiration from './Respiration.jsx'
 import { ajouterNote, ajouterSession } from './stockage.js'
 import { recommander } from './contenu.js'
-import { deverrouillerAudio } from './audio.js'
+import { preparerSeance } from './pleinEcran.js'
 
 const RACCOURCI = 'Dormir'
 
@@ -55,7 +55,7 @@ export default function Dormir({ onFin }) {
         <button
           className="principal"
           onClick={() => {
-            deverrouillerAudio()
+            preparerSeance()
             setASouffle(true)
             setEtape('respire')
           }}
