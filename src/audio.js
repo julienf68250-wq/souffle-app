@@ -77,33 +77,70 @@ function charger(fichier, enBoucle = true) {
 }
 
 // Bruit généré en secours
+// Bruit généré : gauche et droite tirés indépendamment, pour une vraie stéréo (pas un mono dédoublé)
 function bruit(couleur) {
   if (bruits[couleur]) return bruits[couleur]
   const sr = ctx.sampleRate
   const n = sr * 8
-  const buf = ctx.createBuffer(1, n, sr)
-  const d = buf.getChannelData(0)
-  let dernier = 0
-  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0
-  for (let i = 0; i < n; i++) {
-    const w = Math.random() * 2 - 1
-    if (couleur === 'brun') {
-      dernier = (dernier + 0.02 * w) / 1.02
-      d[i] = dernier * 3.5
-    } else if (couleur === 'rose') {
-      b0 = 0.99886 * b0 + w * 0.0555179
-      b1 = 0.99332 * b1 + w * 0.0750759
-      b2 = 0.969 * b2 + w * 0.153852
-      b3 = 0.8665 * b3 + w * 0.3104856
-      b4 = 0.55 * b4 + w * 0.5329522
-      b5 = -0.7616 * b5 - w * 0.016898
-      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11
-      b6 = w * 0.115926
-    } else {
-      d[i] = w * 0.3
+  const buf = ctx.createBuffer(2, n, sr)
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c)
+    let dernier = 0
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1
+      if (couleur === 'brun') {
+        dernier = (dernier + 0.02 * w) / 1.02
+        d[i] = dernier * 3.5
+      } else if (couleur === 'rose') {
+        b0 = 0.99886 * b0 + w * 0.0555179
+        b1 = 0.99332 * b1 + w * 0.0750759
+        b2 = 0.969 * b2 + w * 0.153852
+        b3 = 0.8665 * b3 + w * 0.3104856
+        b4 = 0.55 * b4 + w * 0.5329522
+        b5 = -0.7616 * b5 - w * 0.016898
+        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11
+        b6 = w * 0.115926
+      } else {
+        d[i] = w * 0.3
+      }
     }
   }
   return (bruits[couleur] = boucler(buf, 0.5))
+}
+
+// Réverbération stéréo légère (réponse impulsionnelle générée) : donne de l'espace au bol
+// et à la voix des histoires, enregistrés en mono.
+let salle = null
+function envoiSalle() {
+  if (!salle) {
+    const sr = ctx.sampleRate
+    const n = Math.floor(sr * 2.6)
+    const ir = ctx.createBuffer(2, n, sr)
+    for (let c = 0; c < 2; c++) {
+      const d = ir.getChannelData(c)
+      let lisse = 0
+      for (let i = 0; i < n; i++) {
+        lisse = lisse * 0.6 + (Math.random() * 2 - 1) * 0.4 // un peu plus sombre qu'un bruit blanc
+        d[i] = lisse * Math.pow(1 - i / n, 3.2)
+      }
+    }
+    const conv = ctx.createConvolver()
+    conv.buffer = ir
+    salle = ctx.createGain()
+    salle.gain.value = 1
+    salle.connect(conv).connect(sortie)
+  }
+  return salle
+}
+// Branche une source : son direct + une part de réverbération
+function brancher(noeud, reverb) {
+  noeud.connect(sortie)
+  if (reverb > 0) {
+    const g = ctx.createGain()
+    g.gain.value = reverb
+    noeud.connect(g).connect(envoiSalle())
+  }
 }
 
 // opts : { volume, coupure } fixes (écoute de nuit, sans houle)
@@ -191,8 +228,10 @@ export function demarrerEcoute({ son, histoire, minutes, onFin }) {
     el.preload = 'auto'
     const g = ctx.createGain()
     g.gain.value = 1
-    ctx.createMediaElementSource(el).connect(g).connect(sortie)
+    ctx.createMediaElementSource(el).connect(g)
+    brancher(g, 0.18)
     el.play().catch(() => {})
+    if (ctx.state !== 'running') ctx.resume()
   }
   if (son) demarrerAmbiance(son, { volume: histoire ? son.nuit.sousHistoire : son.nuit.volume, coupure: son.nuit.coupure })
   const minuterie = setTimeout(() => {
@@ -231,7 +270,8 @@ export function cloche(haute) {
     s.playbackRate.value = haute ? 1 : 0.8909
     const g = ctx.createGain()
     g.gain.value = 0.6
-    s.connect(g).connect(sortie)
+    s.connect(g)
+    brancher(g, 0.35)
     s.start()
   }
   if (CONTENU.cloche) charger(CONTENU.cloche, false).then(jouer).catch(() => clocheSynthetique(haute))

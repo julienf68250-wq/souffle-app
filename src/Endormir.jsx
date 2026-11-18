@@ -8,7 +8,7 @@ const MINUTERIES = [15, 30, 45]
 const minutesDe = (s) => Math.round(s / 60)
 
 // Écouter pour s'endormir : une histoire calme (distraction par l'imagerie, Harvey & Payne 2002)
-// ou un bruit seul, qui baisse doucement puis s'arrête (pas de bruit toute la nuit : Basner 2026).
+// OU un son seul (jamais les deux : choix de JF), qui baisse doucement puis s'arrête (pas de bruit toute la nuit : Basner 2026).
 export default function Endormir({ onFin }) {
   const [histoireId, setHistoireId] = useState(CONTENU.histoires[0]?.id ?? null)
   const [sonId, setSonId] = useState('mer')
@@ -32,7 +32,7 @@ export default function Endormir({ onFin }) {
   const lancer = () => {
     preparerSeance()
     demarrerEcoute({
-      son: sonId ? sonParId(sonId) : null,
+      son: histoire ? null : sonParId(sonId),
       histoire,
       minutes: duree,
       onFin: () => {
@@ -40,7 +40,7 @@ export default function Endormir({ onFin }) {
         setFini(true)
       },
     })
-    ajouterSession({ type: 'ecoute', t: Date.now(), histoire: histoire?.id, son: sonId, minutes: duree })
+    ajouterSession({ type: 'ecoute', t: Date.now(), histoire: histoire?.id, son: histoire ? null : sonId, minutes: duree })
     setEnCours(true)
   }
 
@@ -80,24 +80,21 @@ export default function Endormir({ onFin }) {
           </button>
         ))}
         <button className={histoireId == null ? 'actif' : ''} aria-pressed={histoireId == null} onClick={() => setHistoireId(null)}>
-          <strong>Pas d'histoire</strong>
-          <span>Seulement le son.</span>
+          <strong>Un son, sans voix</strong>
+          <span>Mer, pluie, bruit brun ou rose.</span>
         </button>
       </fieldset>
 
-      <fieldset className="puces">
-        <legend>{histoire ? 'En fond, très bas' : 'Le son'}</legend>
-        {CONTENU.sons.map((s) => (
-          <button key={s.id} className={sonId === s.id ? 'actif' : ''} aria-pressed={sonId === s.id} onClick={() => setSonId(s.id)}>
-            {s.nom}
-          </button>
-        ))}
-        {histoire && (
-          <button className={sonId == null ? 'actif' : ''} aria-pressed={sonId == null} onClick={() => setSonId(null)}>
-            Rien
-          </button>
-        )}
-      </fieldset>
+      {!histoire && (
+        <fieldset className="puces">
+          <legend>Le son</legend>
+          {CONTENU.sons.map((s) => (
+            <button key={s.id} className={sonId === s.id ? 'actif' : ''} aria-pressed={sonId === s.id} onClick={() => setSonId(s.id)}>
+              {s.nom}
+            </button>
+          ))}
+        </fieldset>
+      )}
 
       <fieldset className="puces">
         <legend>Arrêt automatique</legend>
@@ -108,8 +105,9 @@ export default function Endormir({ onFin }) {
         ))}
       </fieldset>
 
-      <button className="principal grand" onClick={lancer} disabled={!histoire && !sonId}>
-        Lancer, arrêt dans {duree} min
+      <button className="principal grand" onClick={lancer}>
+        {histoire ? histoire.titre : sonParId(sonId)?.nom}
+        <small>arrêt en douceur dans {duree} min</small>
       </button>
       <p className="aide">L'écran reste allumé en noir pendant l'écoute : sur iPhone, une web app se tait quand l'écran se verrouille.</p>
       <div className="pied">

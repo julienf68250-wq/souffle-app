@@ -206,7 +206,7 @@
       "houle": true,
       "nuit": {
         "volume": 0.55,
-        "sousHistoire": 0.16,
+        "sousHistoire": 0.35,
         "coupure": 2500
       }
     },
@@ -226,7 +226,7 @@
       "houle": false,
       "nuit": {
         "volume": 0.7,
-        "sousHistoire": 0.2,
+        "sousHistoire": 0.4,
         "coupure": 9000
       }
     },
@@ -248,7 +248,7 @@
       ],
       "nuit": {
         "volume": 0.45,
-        "sousHistoire": 0.12,
+        "sousHistoire": 0.28,
         "coupure": 1200
       }
     },
@@ -270,7 +270,7 @@
       ],
       "nuit": {
         "volume": 0.35,
-        "sousHistoire": 0.1,
+        "sousHistoire": 0.22,
         "coupure": 6000
       }
     }
