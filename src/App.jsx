@@ -55,13 +55,13 @@ export default function App() {
     case 'vider':
       return <Vider onFin={accueil} />
     case 'dormir':
-      return <Dormir onFin={accueil} versEcoute={() => setEcran({ nom: 'ecoute' })} />
+      return <Dormir onFin={accueil} etapeInitiale={ecran.etape} versEcoute={() => setEcran({ nom: 'ecoute', retour: { nom: 'dormir', etape: 'nuit' } })} />
     case 'reveil':
       return <Reveil technique={ecran.technique} onFin={accueil} versVider={() => setEcran({ nom: 'vider' })} />
     case 'effet':
       return <Effet onFin={accueil} />
     case 'ecoute':
-      return <Endormir onFin={accueil} />
+      return <Endormir onFin={() => setEcran(ecran.retour ?? { nom: 'accueil' })} />
     case 'agenda':
       return <Agenda onFin={accueil} />
     case 'programme':

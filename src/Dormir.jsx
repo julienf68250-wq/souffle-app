@@ -10,8 +10,8 @@ const RACCOURCI = 'Dormir'
 
 // Rituel du coucher, à faire HORS du lit : liste du lendemain (Scullin 2018),
 // 2 min de souffle lent (optionnel), puis au lit seulement si le sommeil est là.
-export default function Dormir({ onFin, versEcoute }) {
-  const [etape, setEtape] = useState('vider')
+export default function Dormir({ onFin, versEcoute, etapeInitiale = 'vider' }) {
+  const [etape, setEtape] = useState(etapeInitiale)
   const [texte, setTexte] = useState('')
   const [technique] = useState(() => recommander('soir'))
   const [aSouffle, setASouffle] = useState(false)

@@ -46,14 +46,15 @@ export default function Endormir({ onFin }) {
 
   if (enCours || fini)
     return (
-      <main className="ecoute-noire" onDoubleClick={() => !fini && (arreterEcoute(), setEnCours(false), onFin())}>
+      <main className="ecoute-noire" onDoubleClick={() => !fini && (arreterEcoute(), setEnCours(false))}>
         <p>{fini ? 'Bonne nuit.' : 'Pose le téléphone, écran contre le lit. Le son baissera tout seul.'}</p>
         <button
           className="lien"
           onClick={() => {
+            // On revient au choix de l'écoute, là où on était
             arreterEcoute()
             setEnCours(false)
-            onFin()
+            setFini(false)
           }}
         >
           {fini ? 'Fermer' : 'Arrêter'}
