@@ -88,3 +88,30 @@ export function meilleure() {
 
 export const nouveautesAAfficher = () => contenu.nouveautes.filter((n) => n.version > lire(CLES.versionVue, 0))
 export const marquerNouveautesVues = () => ecrire(CLES.versionVue, contenu.version)
+
+// ---------- Histoires : une par soir, en roulement ----------
+export const histoiresDisponibles = () => (contenu.histoires ?? []).filter((h) => (h.semaine ?? 0) <= semaineCourante())
+const dernieresEcoutes = () => {
+  const m = new Map()
+  // Écoutée = au moins 2 minutes, ou jusqu'au bout
+  for (const s of sessions()) if (s.type === 'ecoute' && s.histoire && (s.fini || (s.ecoute ?? 0) >= 120)) m.set(s.histoire, s.t)
+  return m
+}
+export const estNouvelle = (h) => (h.semaine ?? 0) > 0 && !dernieresEcoutes().has(h.id) && h.semaine >= semaineCourante() - 1
+
+// Jamais écoutée d'abord (la plus récemment débloquée en tête), sinon la moins récemment écoutée.
+export function histoireDuSoir() {
+  const dispo = histoiresDisponibles()
+  if (!dispo.length) return null
+  const vues = dernieresEcoutes()
+  const jamais = dispo.filter((h) => !vues.has(h.id)).sort((a, b) => (b.semaine ?? 0) - (a.semaine ?? 0))
+  if (jamais.length) return jamais[0]
+  return [...dispo].sort((a, b) => vues.get(a.id) - vues.get(b.id))[0]
+}
+export const dejaEcoutee = (h) => dernieresEcoutes().has(h.id)
+export function prochainesHistoires() {
+  const s = semaineCourante()
+  const suivantes = (contenu.histoires ?? []).filter((h) => (h.semaine ?? 0) === s + 1)
+  const jours = Math.ceil((debut() + (s + 1) * 7 * JOUR - Date.now()) / JOUR)
+  return suivantes.length ? { n: suivantes.length, jours } : null
+}

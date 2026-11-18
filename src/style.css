@@ -454,6 +454,38 @@ input[type='time'] {
 .ecoute-noire p { margin: 0; max-width: 26ch; font: 18px/1.4 var(--serif); }
 .ecoute-noire .lien { color: #3a3a3a; }
 
+.nouvelle { font: italic 500 13px/1 var(--sans); margin-left: 8px; padding: 3px 7px; border-radius: 999px; background: var(--ambre); color: var(--ciel); vertical-align: 3px; }
+.autres-histoires ul { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-direction: column; }
+.autres-histoires li button { width: 100%; text-align: left; padding: 11px 0; border-bottom: 1px solid var(--trait); display: flex; flex-direction: column; gap: 2px; }
+.titre-h { font: 18px/1.3 var(--serif); }
+.meta-h { font-size: 14px; color: var(--ardoise); }
+
+/* Lecteur d'histoire : noir, commandes discrètes mais assez grandes pour un geste à tâtons */
+.lecteur { gap: 14px; color: #5a5a5a; }
+.lecteur-titre { font: 22px/1.3 var(--serif) !important; color: #6e6e6e; }
+.lecteur-auteur { font: 14px/1.4 var(--sans) !important; margin-top: -8px !important; }
+.progression {
+  width: min(86vw, 420px);
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  margin-top: 18px;
+}
+.progression::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: linear-gradient(to right, #5a5a5a var(--avance, 0%), #262626 var(--avance, 0%)); }
+.progression::-moz-range-track { height: 3px; border-radius: 2px; background: #262626; }
+.progression::-moz-range-progress { height: 3px; background: #5a5a5a; }
+.progression::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #6e6e6e; margin-top: -6.5px; }
+.progression::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: #6e6e6e; }
+.temps { width: min(86vw, 420px); display: flex; justify-content: space-between; font-size: 13px; font-variant-numeric: tabular-nums; margin-top: -6px; }
+.commandes { display: flex; align-items: center; gap: 34px; margin: 14px 0 6px; }
+.commandes button { position: relative; width: 56px; height: 56px; display: grid; place-items: center; color: #6e6e6e; border-radius: 50%; }
+.commandes button svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.commandes button span { position: absolute; font-size: 10px; font-weight: 600; top: 50%; left: 50%; translate: -50% -38%; }
+.commandes .lecture { width: 76px; height: 76px; border: 1.5px solid #3a3a3a; }
+.commandes .lecture svg { width: 30px; height: 30px; stroke-width: 2.4; }
+.commandes .lecture .plein { fill: currentColor; stroke: none; }
+
 /* ---------- Dictée ---------- */
 .dictee { display: flex; flex-direction: column; gap: 6px; }
 .dicter {

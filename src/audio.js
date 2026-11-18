@@ -35,7 +35,7 @@ export function deverrouillerAudio() {
     s.buffer = c.createBuffer(1, 1, 22050)
     s.connect(c.destination)
     s.start(0)
-    if (CONTENU.cloche) charger(CONTENU.cloche, false).catch(() => {})
+    setTimeout(() => (bol(true), bol(false)), 0) // prépare le bol hors du geste
   } catch {
     /* pas d'audio : la séance reste visuelle */
   }
@@ -211,34 +211,52 @@ export function arreterAmbiance(fondu = 1.5) {
 // minutes, programmée dans le moteur audio lui-même.
 let ecoute = null
 
+// Histoire : lue jusqu'au bout (le lecteur permet pause, avance, retour), fondu à la fin.
+// Son seul : minuterie, baisse douce sur les 2 dernières minutes. Jamais les deux ensemble.
+// Renvoie l'élément audio de l'histoire (pour le lecteur), sinon null.
 export function demarrerEcoute({ son, histoire, minutes, onFin }) {
-  if (!ctx) return
+  if (!ctx) return null
   arreterEcoute(0)
   const t = ctx.currentTime
-  const fin = t + minutes * 60
   sortie.gain.cancelScheduledValues(t)
   sortie.gain.setValueAtTime(1, t)
-  sortie.gain.setValueAtTime(1, Math.max(t, fin - 120))
-  sortie.gain.linearRampToValueAtTime(0.0001, fin)
 
-  let el = null
   if (histoire) {
-    el = new Audio()
-    el.src = new URL(histoire.fichier, document.baseURI).href
+    const el = new Audio()
+    if (histoire.url) el.crossOrigin = 'anonymous' // archive.org autorise la lecture (CORS)
+    el.src = histoire.url ?? new URL(histoire.fichier, document.baseURI).href
     el.preload = 'auto'
+    // Volume harmonisé (gain mesuré à l'avance) + limiteur pour ne jamais saturer
     const g = ctx.createGain()
-    g.gain.value = 1
-    ctx.createMediaElementSource(el).connect(g)
-    brancher(g, 0.18)
+    g.gain.value = Math.pow(10, (histoire.gain ?? 0) / 20)
+    const limiteur = ctx.createDynamicsCompressor()
+    limiteur.threshold.value = -8
+    limiteur.knee.value = 6
+    limiteur.ratio.value = 8
+    limiteur.attack.value = 0.003
+    limiteur.release.value = 0.25
+    ctx.createMediaElementSource(el).connect(g).connect(limiteur)
+    brancher(limiteur, 0) // voix sans réverbération : l'écho gênait (retour de JF)
+    el.addEventListener('ended', () => {
+      arreterEcoute(3)
+      onFin?.()
+    })
     el.play().catch(() => {})
     if (ctx.state !== 'running') ctx.resume()
+    ecoute = { el, minuterie: null }
+    return el
   }
-  if (son) demarrerAmbiance(son, { volume: histoire ? son.nuit.sousHistoire : son.nuit.volume, coupure: son.nuit.coupure })
+
+  const fin = t + minutes * 60
+  sortie.gain.setValueAtTime(1, Math.max(t, fin - 120))
+  sortie.gain.linearRampToValueAtTime(0.0001, fin)
+  if (son) demarrerAmbiance(son, { volume: son.nuit.volume, coupure: son.nuit.coupure })
   const minuterie = setTimeout(() => {
     arreterEcoute(0)
     onFin?.()
   }, minutes * 60 * 1000)
-  ecoute = { el, minuterie }
+  ecoute = { el: null, minuterie }
+  return null
 }
 
 export function arreterEcoute(fondu = 1.5) {
@@ -260,39 +278,63 @@ export function arreterEcoute(fondu = 1.5) {
   sortie.gain.setValueAtTime(1, t + fondu + 0.2)
 }
 
-// Bol chantant enregistré : joué tel quel à l'inspiration, un ton plus bas à l'expiration.
-// Repli : bol synthétique si le fichier n'est pas disponible.
-export function cloche(haute) {
-  if (!ctx) return
-  const jouer = (t) => {
-    const s = ctx.createBufferSource()
-    s.buffer = t.buf
-    s.playbackRate.value = haute ? 1 : 0.8909
-    const g = ctx.createGain()
-    g.gain.value = 0.6
-    s.connect(g)
-    brancher(g, 0.35)
-    s.start()
+// Bol chantant synthétisé en stéréo : partiels inharmoniques d'un bol tibétain, chacun
+// légèrement désaccordé entre gauche et droite (battements qui « tournent »), coup de maillet au début.
+// Plus aigu à l'inspiration, plus grave à l'expiration.
+const bols = {}
+function bol(haute) {
+  const cle = haute ? 'haut' : 'bas'
+  if (bols[cle]) return bols[cle]
+  const sr = ctx.sampleRate
+  const n = Math.floor(sr * 7)
+  const buf = ctx.createBuffer(2, n, sr)
+  const f0 = haute ? 262 : 220
+  // [rapport, amplitude, durée de décroissance (s), écart gauche/droite (Hz)]
+  const partiels = [
+    [1, 1, 6.5, 0.7],
+    [2.71, 0.42, 4.2, 1.1],
+    [5.13, 0.2, 2.6, 1.6],
+    [8.27, 0.09, 1.5, 2.2],
+    [12.1, 0.04, 0.8, 3],
+  ]
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c)
+    const sens = c === 0 ? 1 : -1
+    for (const [r, a, dec, ecart] of partiels) {
+      const f = f0 * r + (sens * ecart) / 2
+      const w = (2 * Math.PI * f) / sr
+      const phase = Math.random() * 2 * Math.PI
+      const k = 1 / (dec * sr)
+      for (let i = 0; i < n; i++) {
+        const att = i < sr * 0.004 ? i / (sr * 0.004) : 1
+        d[i] += a * att * Math.exp(-i * k) * Math.sin(w * i + phase)
+      }
+    }
+    // Coup de maillet : bref bruit adouci
+    let lisse = 0
+    for (let i = 0; i < sr * 0.012; i++) {
+      lisse = lisse * 0.7 + (Math.random() * 2 - 1) * 0.3
+      d[i] += lisse * 0.5 * (1 - i / (sr * 0.012))
+    }
   }
-  if (CONTENU.cloche) charger(CONTENU.cloche, false).then(jouer).catch(() => clocheSynthetique(haute))
-  else clocheSynthetique(haute)
+  let crete = 0
+  for (let c = 0; c < 2; c++) for (const v of buf.getChannelData(c)) crete = Math.max(crete, Math.abs(v))
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c)
+    for (let i = 0; i < n; i++) d[i] *= 0.5 / crete
+  }
+  return (bols[cle] = buf)
 }
 
-function clocheSynthetique(haute) {
-  const t = ctx.currentTime
-  const f0 = haute ? 528 : 396
-  for (const [ratio, vol, duree] of [[1, 0.22, 2.6], [2.76, 0.06, 1.3], [5.4, 0.025, 0.7]]) {
-    const o = ctx.createOscillator()
-    o.type = 'sine'
-    o.frequency.value = f0 * ratio
-    const g = ctx.createGain()
-    g.gain.setValueAtTime(0, t)
-    g.gain.linearRampToValueAtTime(vol, t + 0.02)
-    g.gain.exponentialRampToValueAtTime(0.0001, t + duree)
-    o.connect(g).connect(sortie)
-    o.start(t)
-    o.stop(t + duree + 0.05)
-  }
+export function cloche(haute) {
+  if (!ctx) return
+  const s = ctx.createBufferSource()
+  s.buffer = bol(haute)
+  const g = ctx.createGain()
+  g.gain.value = 0.7
+  s.connect(g)
+  brancher(g, 0.3)
+  s.start()
 }
 
 // Niveau de sortie mesuré (diagnostic : window.__souffleAudio.rms() dans la console)

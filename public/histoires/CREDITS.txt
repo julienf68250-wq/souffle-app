@@ -5,3 +5,8 @@ https://archive.org/details/lettres_de_mon_moulin_naf_0901_librivox
 - etoiles.m4a   : « Les Étoiles »
 - phare.m4a     : « Le Phare des Sanguinaires »
 - camargue.m4a  : « En Camargue »
+
+Les autres histoires sont lues directement depuis l'Internet Archive (LibriVox, domaine public), sans copie ici :
+Jules Michelet « La Mer » (lu par Christiane Jehanne), Georges François Renard « À travers les régions de France »
+(bénévoles LibriVox), George Sand « La Mare au diable » (Ezwa), Chateaubriand « Voyage en Italie » (Christiane Jehanne),
+Marcel Proust « À l'ombre des jeunes filles en fleurs » (Bernard), Alphonse Daudet « Lettres de mon moulin » (Naf).

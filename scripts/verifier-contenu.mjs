@@ -72,7 +72,12 @@ for (const [k, h] of (c.histoires ?? []).entries()) {
   hist.add(h.id)
   for (const champ of ['titre', 'auteur', 'lecteur', 'resume']) if (!texte(h[champ], 80)) err.push(`${ici} : ${champ} de 1 à 80 caractères`)
   if (!nombre(h.duree, 60, 3600)) err.push(`${ici} : duree en secondes (60 à 3600)`)
-  verifierFichier(h.fichier, ici, 'histoires', 10)
+  if (!Number.isInteger(h.semaine) || h.semaine < 0) err.push(`${ici} : semaine entière ≥ 0`)
+  if (!nombre(h.gain, -12, 12)) err.push(`${ici} : gain en dB entre -12 et 12`)
+  if (h.url) {
+    // Lecture directe depuis l'Internet Archive (LibriVox, domaine public, CORS ouvert)
+    if (!/^https:\/\/archive\.org\/download\/[\w.-]+\/[\w.%-]+\.(mp3|m4a|ogg)$/.test(h.url)) err.push(`${ici} : url = https://archive.org/download/<livre>/<fichier>.mp3`)
+  } else verifierFichier(h.fichier, ici, 'histoires', 10)
 }
 
 for (const [k, n] of (c.nouveautes ?? []).entries()) {
