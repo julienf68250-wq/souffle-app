@@ -1,6 +1,6 @@
 // Garde-fou de src/contenu/contenu.json : lancé avant chaque build.
 // Un contenu invalide bloque la compilation au lieu de casser l'app sur le téléphone.
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 
 const c = JSON.parse(readFileSync(new URL('../src/contenu/contenu.json', import.meta.url), 'utf8'))
 const err = []
@@ -8,6 +8,13 @@ const MOMENTS = ['jour', 'soir', 'reveil']
 const BRUITS = ['brun', 'rose', 'blanc']
 const texte = (v, max) => typeof v === 'string' && v.trim().length > 0 && v.length <= max
 const nombre = (v, min, max) => typeof v === 'number' && v >= min && v <= max
+// Un son = un fichier dans public/sons/, en m4a (AAC) ou mp3, 3 Mo max (l'app reste légère hors connexion)
+function verifierFichier(f, ici) {
+  if (!/^sons\/[a-z0-9-]+\.(m4a|mp3)$/.test(f)) return err.push(`${ici} : fichier = sons/<nom>.m4a ou .mp3`)
+  const chemin = new URL(`../public/${f}`, import.meta.url)
+  if (!existsSync(chemin)) return err.push(`${ici} : ${f} introuvable dans public/`)
+  if (statSync(chemin).size > 3 * 1024 * 1024) err.push(`${ici} : ${f} dépasse 3 Mo`)
+}
 
 if (!Number.isInteger(c.version) || c.version < 1) err.push('version : entier ≥ 1')
 
@@ -43,14 +50,17 @@ for (const [k, s] of (c.sons ?? []).entries()) {
   if (!/^[a-z0-9-]+$/.test(s.id ?? '') || sons.has(s.id)) err.push(`${ici} : id invalide ou en double`)
   sons.add(s.id)
   if (!texte(s.nom, 14)) err.push(`${ici} : nom de 1 à 14 caractères`)
-  if (!BRUITS.includes(s.bruit)) err.push(`${ici} : bruit parmi ${BRUITS.join(', ')}`)
-  if (!Array.isArray(s.coupure) || s.coupure.length !== 2 || !s.coupure.every((v) => nombre(v, 50, 12000)))
-    err.push(`${ici} : coupure = [min, max] entre 50 et 12000 Hz`)
+  if (!s.fichier && !s.bruit) err.push(`${ici} : il faut un fichier, un bruit, ou les deux`)
+  if (s.bruit && !BRUITS.includes(s.bruit)) err.push(`${ici} : bruit parmi ${BRUITS.join(', ')}`)
+  if (s.fichier) verifierFichier(s.fichier, ici)
+  if (!Array.isArray(s.coupure) || s.coupure.length !== 2 || !s.coupure.every((v) => nombre(v, 50, 20000)))
+    err.push(`${ici} : coupure = [min, max] entre 50 et 20000 Hz`)
   if (!Array.isArray(s.volume) || s.volume.length !== 2 || !s.volume.every((v) => nombre(v, 0, 1)))
     err.push(`${ici} : volume = [min, max] entre 0 et 1`)
   if (typeof s.houle !== 'boolean') err.push(`${ici} : houle = true ou false`)
 }
 if (!sons.has('mer')) err.push('le son « mer » (son par défaut) doit exister')
+if (c.cloche) verifierFichier(c.cloche, 'cloche')
 
 for (const [k, n] of (c.nouveautes ?? []).entries()) {
   if (!Number.isInteger(n.version) || n.version > c.version) err.push(`nouveautes[${k}] : version entière ≤ ${c.version}`)

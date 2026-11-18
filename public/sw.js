@@ -24,6 +24,8 @@ self.addEventListener('fetch', (e) => {
         }
         return rep
       })
-      .catch(() => caches.match(req).then((r) => r || caches.match('./index.html'))),
+      .catch(() =>
+        caches.match(req, { ignoreVary: true }).then((r) => r || caches.match('./index.html', { ignoreVary: true })),
+      ),
   )
 })

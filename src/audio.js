@@ -1,11 +1,16 @@
-// Moteur sonore : ambiance (bruit filtré généré, sans fichier) qui suit la marée,
-// cloche douce aux changements de phase quand l'ambiance n'a pas de houle.
+// Moteur sonore : ambiance enregistrée (mer, pluie…) qui suit la marée, bol chantant
+// aux changements de phase quand l'ambiance n'a pas de houle. Si un fichier ne charge
+// pas, un bruit généré prend le relais.
 // iOS : l'audio ne démarre qu'après un geste, d'où deverrouillerAudio() dans chaque clic de départ.
+import { CONTENU } from './contenu.js'
+
 let ctx = null
 let sortie = null
 let analyseur = null
 let amb = null
+let jeton = 0
 const bruits = {}
+const fichiers = {}
 
 function contexte() {
   if (!ctx) {
@@ -30,12 +35,48 @@ export function deverrouillerAudio() {
     s.buffer = c.createBuffer(1, 1, 22050)
     s.connect(c.destination)
     s.start(0)
+    if (CONTENU.cloche) charger(CONTENU.cloche, false).catch(() => {})
   } catch {
     /* pas d'audio : la séance reste visuelle */
   }
 }
 
-// Bruit en boucle, raccord sans clic (fondu croisé de la fin sur le début)
+// Adresses des sons, pour la mise en cache hors connexion
+export const urlsSons = () =>
+  [...CONTENU.sons.map((s) => s.fichier), CONTENU.cloche].filter(Boolean).map((u) => new URL(u, document.baseURI).href)
+
+// Raccord de boucle sans clic : la fin se fond dans le début, sur chaque canal
+function boucler(buf, fondu) {
+  const f = Math.min(Math.floor(buf.sampleRate * fondu), Math.floor(buf.length / 4))
+  const n = buf.length
+  for (let c = 0; c < buf.numberOfChannels; c++) {
+    const d = buf.getChannelData(c)
+    for (let i = 0; i < f; i++) {
+      const a = i / f
+      d[i] = d[i] * Math.sqrt(a) + d[n - f + i] * Math.sqrt(1 - a)
+    }
+  }
+  return { buf, fin: (n - f) / buf.sampleRate }
+}
+
+function charger(fichier, enBoucle = true) {
+  if (!fichiers[fichier]) {
+    fichiers[fichier] = fetch(new URL(fichier, document.baseURI))
+      .then((r) => {
+        if (!r.ok) throw new Error(`${fichier} : ${r.status}`)
+        return r.arrayBuffer()
+      })
+      .then((ab) => new Promise((ok, ko) => ctx.decodeAudioData(ab, ok, ko)))
+      .then((buf) => (enBoucle ? boucler(buf, 2) : { buf, fin: buf.duration }))
+      .catch((e) => {
+        delete fichiers[fichier]
+        throw e
+      })
+  }
+  return fichiers[fichier]
+}
+
+// Bruit généré en secours
 function bruit(couleur) {
   if (bruits[couleur]) return bruits[couleur]
   const sr = ctx.sampleRate
@@ -62,38 +103,45 @@ function bruit(couleur) {
       d[i] = w * 0.3
     }
   }
-  const f = Math.floor(sr * 0.5)
-  for (let i = 0; i < f; i++) {
-    const a = i / f
-    d[i] = d[i] * a + d[n - f + i] * (1 - a)
-  }
-  return (bruits[couleur] = { buf, fin: (n - f) / sr })
+  return (bruits[couleur] = boucler(buf, 0.5))
 }
 
 export function demarrerAmbiance(son) {
   if (!ctx || !son) return
   arreterAmbiance(0.3)
-  const { buf, fin } = bruit(son.bruit)
-  const source = ctx.createBufferSource()
-  source.buffer = buf
-  source.loop = true
-  source.loopStart = 0
-  source.loopEnd = fin
-  const filtre = ctx.createBiquadFilter()
-  filtre.type = 'lowpass'
-  filtre.frequency.value = son.coupure[0]
-  filtre.Q.value = 0.5
-  const gain = ctx.createGain()
-  const t = ctx.currentTime
-  gain.gain.setValueAtTime(0, t)
-  gain.gain.linearRampToValueAtTime(son.volume[0], t + 2)
-  source.connect(filtre).connect(gain).connect(sortie)
-  source.start()
-  amb = { source, filtre, gain, son }
+  const mon = ++jeton
+  const pret = son.fichier
+    ? charger(son.fichier).catch(() => (son.bruit ? bruit(son.bruit) : null))
+    : Promise.resolve(son.bruit ? bruit(son.bruit) : null)
+  pret.then((t) => {
+    if (!t || mon !== jeton) return
+    const source = ctx.createBufferSource()
+    source.buffer = t.buf
+    source.loop = true
+    source.loopStart = 0
+    source.loopEnd = t.fin
+    const filtre = ctx.createBiquadFilter()
+    filtre.type = 'lowpass'
+    filtre.frequency.value = son.coupure[0]
+    filtre.Q.value = 0.5
+    const gain = ctx.createGain()
+    const now = ctx.currentTime
+    gain.gain.setValueAtTime(0, now)
+    gain.gain.linearRampToValueAtTime(son.volume[0], now + 2)
+    source.connect(filtre).connect(gain).connect(sortie)
+    // Départ à un endroit au hasard : la boucle se remarque moins d'une séance à l'autre
+    source.start(0, Math.random() * t.fin)
+    amb = { source, filtre, gain, son }
+    // La phase en cours a commencé pendant le chargement : on la rattrape
+    if (cible && cible.fin > ctx.currentTime) houle(cible.niveau, cible.fin - ctx.currentTime)
+  })
 }
+
+let cible = null
 
 // Fait monter ou descendre la houle vers un niveau (0 = vide, 1 = plein) en `duree` secondes
 export function houle(niveau, duree) {
+  if (ctx) cible = { niveau, fin: ctx.currentTime + duree }
   if (!amb || !amb.son.houle) return
   const { son, gain, filtre } = amb
   const t = ctx.currentTime
@@ -109,6 +157,7 @@ export function houle(niveau, duree) {
 }
 
 export function arreterAmbiance(fondu = 1.5) {
+  jeton++
   if (!amb) return
   const { source, gain } = amb
   amb = null
@@ -119,9 +168,24 @@ export function arreterAmbiance(fondu = 1.5) {
   source.stop(t + fondu + 0.05)
 }
 
-// Bol chantant synthétique : aigu à l'inspiration, grave à l'expiration
+// Bol chantant enregistré : joué tel quel à l'inspiration, un ton plus bas à l'expiration.
+// Repli : bol synthétique si le fichier n'est pas disponible.
 export function cloche(haute) {
   if (!ctx) return
+  const jouer = (t) => {
+    const s = ctx.createBufferSource()
+    s.buffer = t.buf
+    s.playbackRate.value = haute ? 1 : 0.8909
+    const g = ctx.createGain()
+    g.gain.value = 0.6
+    s.connect(g).connect(sortie)
+    s.start()
+  }
+  if (CONTENU.cloche) charger(CONTENU.cloche, false).then(jouer).catch(() => clocheSynthetique(haute))
+  else clocheSynthetique(haute)
+}
+
+function clocheSynthetique(haute) {
   const t = ctx.currentTime
   const f0 = haute ? 528 : 396
   for (const [ratio, vol, duree] of [[1, 0.22, 2.6], [2.76, 0.06, 1.3], [5.4, 0.025, 0.7]]) {
@@ -145,4 +209,5 @@ export function rms() {
   analyseur.getFloatTimeDomainData(a)
   return Math.sqrt(a.reduce((s, x) => s + x * x, 0) / a.length)
 }
-if (typeof window !== 'undefined') window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms }
+if (typeof window !== 'undefined')
+  window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms, source: () => (amb ? (amb.source.buffer.numberOfChannels === 2 ? 'fichier' : 'genere') : 'aucune') }

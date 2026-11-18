@@ -90,8 +90,9 @@
       ]
     }
   ],
+  "cloche": "sons/bol.m4a",
   "sons": [
-    { "id": "mer", "nom": "Mer", "bruit": "brun", "coupure": [350, 1800], "volume": [0.2, 0.7], "houle": true },
-    { "id": "pluie", "nom": "Pluie", "bruit": "rose", "coupure": [5000, 5000], "volume": [0.65, 0.65], "houle": false }
+    { "id": "mer", "nom": "Mer", "fichier": "sons/mer.m4a", "bruit": "brun", "coupure": [700, 16000], "volume": [0.35, 1], "houle": true },
+    { "id": "pluie", "nom": "Pluie", "fichier": "sons/pluie.m4a", "bruit": "rose", "coupure": [16000, 16000], "volume": [0.9, 0.9], "houle": false }
   ]
 }
