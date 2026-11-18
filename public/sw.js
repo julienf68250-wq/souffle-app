@@ -18,7 +18,7 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(req)
       .then((rep) => {
-        if (rep.ok) {
+        if (rep.status === 200) {
           const copie = rep.clone()
           caches.open(CACHE).then((c) => c.put(req, copie))
         }

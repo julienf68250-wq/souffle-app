@@ -7,6 +7,7 @@ import Effet from './Effet.jsx'
 import Agenda from './Agenda.jsx'
 import Programme from './Programme.jsx'
 import Consulter from './Consulter.jsx'
+import Endormir from './Endormir.jsx'
 import Vague from './Vague.jsx'
 import Astre, { periode } from './Ciel.jsx'
 import Installer from './Installer.jsx'
@@ -54,11 +55,13 @@ export default function App() {
     case 'vider':
       return <Vider onFin={accueil} />
     case 'dormir':
-      return <Dormir onFin={accueil} />
+      return <Dormir onFin={accueil} versEcoute={() => setEcran({ nom: 'ecoute' })} />
     case 'reveil':
       return <Reveil technique={ecran.technique} onFin={accueil} versVider={() => setEcran({ nom: 'vider' })} />
     case 'effet':
       return <Effet onFin={accueil} />
+    case 'ecoute':
+      return <Endormir onFin={accueil} />
     case 'agenda':
       return <Agenda onFin={accueil} />
     case 'programme':
@@ -171,6 +174,9 @@ function Accueil({ nuit, aller }) {
             <span>Liste de demain, souffle lent, puis au lit si le sommeil est là</span>
           </button>
           <div className="liens-bande">
+            <button className="lien" onClick={() => aller({ nom: 'ecoute' })}>
+              Écouter pour s'endormir
+            </button>
             <button className="lien" onClick={() => aller({ nom: 'programme' })}>
               {prog ? `Programme sommeil, semaine ${prog.semaine}` : 'Démarrer le programme sommeil'}
             </button>

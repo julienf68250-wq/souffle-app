@@ -106,7 +106,8 @@ function bruit(couleur) {
   return (bruits[couleur] = boucler(buf, 0.5))
 }
 
-export function demarrerAmbiance(son) {
+// opts : { volume, coupure } fixes (écoute de nuit, sans houle)
+export function demarrerAmbiance(son, opts = {}) {
   if (!ctx || !son) return
   arreterAmbiance(0.3)
   const mon = ++jeton
@@ -122,16 +123,16 @@ export function demarrerAmbiance(son) {
     source.loopEnd = t.fin
     const filtre = ctx.createBiquadFilter()
     filtre.type = 'lowpass'
-    filtre.frequency.value = son.coupure[0]
+    filtre.frequency.value = opts.coupure ?? son.coupure[0]
     filtre.Q.value = 0.5
     const gain = ctx.createGain()
     const now = ctx.currentTime
     gain.gain.setValueAtTime(0, now)
-    gain.gain.linearRampToValueAtTime(son.volume[0], now + 2)
+    gain.gain.linearRampToValueAtTime(opts.volume ?? son.volume[0], now + 3)
     source.connect(filtre).connect(gain).connect(sortie)
     // Départ à un endroit au hasard : la boucle se remarque moins d'une séance à l'autre
     source.start(0, Math.random() * t.fin)
-    amb = { source, filtre, gain, son }
+    amb = { source, filtre, gain, son: opts.volume != null ? { ...son, houle: false } : son }
     // La phase en cours a commencé pendant le chargement : on la rattrape
     if (cible && cible.fin > ctx.currentTime) houle(cible.niveau, cible.fin - ctx.currentTime)
   })
@@ -166,6 +167,58 @@ export function arreterAmbiance(fondu = 1.5) {
   gain.gain.setValueAtTime(gain.gain.value, t)
   gain.gain.linearRampToValueAtTime(0, t + fondu)
   source.stop(t + fondu + 0.05)
+}
+
+// ---------- Écoute pour s'endormir ----------
+// Histoire (élément audio, lu en flux) et/ou ambiance, puis baisse douce sur les 2 dernières
+// minutes, programmée dans le moteur audio lui-même.
+let ecoute = null
+
+export function demarrerEcoute({ son, histoire, minutes, onFin }) {
+  if (!ctx) return
+  arreterEcoute(0)
+  const t = ctx.currentTime
+  const fin = t + minutes * 60
+  sortie.gain.cancelScheduledValues(t)
+  sortie.gain.setValueAtTime(1, t)
+  sortie.gain.setValueAtTime(1, Math.max(t, fin - 120))
+  sortie.gain.linearRampToValueAtTime(0.0001, fin)
+
+  let el = null
+  if (histoire) {
+    el = new Audio()
+    el.src = new URL(histoire.fichier, document.baseURI).href
+    el.preload = 'auto'
+    const g = ctx.createGain()
+    g.gain.value = 1
+    ctx.createMediaElementSource(el).connect(g).connect(sortie)
+    el.play().catch(() => {})
+  }
+  if (son) demarrerAmbiance(son, { volume: histoire ? son.nuit.sousHistoire : son.nuit.volume, coupure: son.nuit.coupure })
+  const minuterie = setTimeout(() => {
+    arreterEcoute(0)
+    onFin?.()
+  }, minutes * 60 * 1000)
+  ecoute = { el, minuterie }
+}
+
+export function arreterEcoute(fondu = 1.5) {
+  if (!ecoute) return
+  const { el, minuterie } = ecoute
+  ecoute = null
+  clearTimeout(minuterie)
+  arreterAmbiance(fondu)
+  if (el) {
+    el.pause()
+    el.removeAttribute('src')
+    el.load()
+  }
+  // Remet le volume général à 1 une fois le fondu terminé
+  const t = ctx.currentTime
+  sortie.gain.cancelScheduledValues(t)
+  sortie.gain.setValueAtTime(sortie.gain.value, t)
+  sortie.gain.linearRampToValueAtTime(0.0001, t + Math.max(fondu, 0.05))
+  sortie.gain.setValueAtTime(1, t + fondu + 0.2)
 }
 
 // Bol chantant enregistré : joué tel quel à l'inspiration, un ton plus bas à l'expiration.
@@ -210,4 +263,4 @@ export function rms() {
   return Math.sqrt(a.reduce((s, x) => s + x * x, 0) / a.length)
 }
 if (typeof window !== 'undefined')
-  window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms, source: () => (amb ? (amb.source.buffer.numberOfChannels === 2 ? 'fichier' : 'genere') : 'aucune') }
+  window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms, ecoute: () => !!ecoute, source: () => (amb ? (amb.source.buffer.numberOfChannels === 2 ? 'fichier' : 'genere') : 'aucune') }

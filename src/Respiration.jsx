@@ -67,7 +67,7 @@ export default function Respiration({ technique, duree, sombre = false, onFin, o
 
   const changerSon = () => {
     deverrouillerAudio()
-    const ids = [...CONTENU.sons.map((s) => s.id), null]
+    const ids = [...CONTENU.sons.filter((s) => !s.usage || s.usage.includes('seance')).map((s) => s.id), null]
     const suivant = ids[(ids.indexOf(sonId) + 1) % ids.length]
     ecrireSon(suivant)
     setSonId(suivant)

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import Dictee from './Dictee.jsx'
 import Respiration from './Respiration.jsx'
 import { ajouterNote, ajouterSession } from './stockage.js'
 import { recommander } from './contenu.js'
@@ -9,12 +10,13 @@ const RACCOURCI = 'Dormir'
 
 // Rituel du coucher, à faire HORS du lit : liste du lendemain (Scullin 2018),
 // 2 min de souffle lent (optionnel), puis au lit seulement si le sommeil est là.
-export default function Dormir({ onFin }) {
+export default function Dormir({ onFin, versEcoute }) {
   const [etape, setEtape] = useState('vider')
   const [texte, setTexte] = useState('')
   const [technique] = useState(() => recommander('soir'))
   const [aSouffle, setASouffle] = useState(false)
   const prog = etatProgramme()
+  const champ = useRef(null)
 
   const lancerNuit = () => {
     ajouterSession({ type: 'nuit', t: Date.now(), technique: aSouffle ? technique.id : undefined })
@@ -33,7 +35,8 @@ export default function Dormir({ onFin }) {
           Écris précisément ce que tu as à faire demain et les jours suivants. Dans une étude, 5 minutes de liste au coucher ont fait gagner une dizaine de minutes
           d'endormissement.
         </p>
-        <textarea value={texte} onChange={(e) => setTexte(e.target.value)} rows={5} placeholder="Appeler le garage avant 10 h, relire le devis…" />
+        <Dictee texte={texte} setTexte={setTexte} champ={champ} />
+        <textarea ref={champ} value={texte} onChange={(e) => setTexte(e.target.value)} rows={5} placeholder="Appeler le garage avant 10 h, relire le devis…" />
         <button
           className="principal"
           onClick={() => {
@@ -82,10 +85,18 @@ export default function Dormir({ onFin }) {
         Paupières lourdes : vas-y. Sinon, reste au calme hors du lit encore un moment.
         {prog && ` Lever demain à ${prog.lever}, même si la nuit est mauvaise.`}
       </p>
-      <button className="principal grand" onClick={lancerNuit}>
-        Lancer la nuit
+      <button
+        className="principal grand"
+        onClick={() => {
+          ajouterSession({ type: 'nuit', t: Date.now(), technique: aSouffle ? technique.id : undefined })
+          versEcoute()
+        }}
+      >
+        Écouter pour m'endormir
       </button>
-      <p className="aide">Puis pose le téléphone loin du lit, écran retourné.</p>
+      <button className="secondaire" onClick={lancerNuit}>
+        Juste le mode Sommeil de l'iPhone
+      </button>
       <details className="config">
         <summary>Préparer le raccourci « {RACCOURCI} » (une seule fois)</summary>
         <ol>

@@ -9,11 +9,11 @@ const BRUITS = ['brun', 'rose', 'blanc']
 const texte = (v, max) => typeof v === 'string' && v.trim().length > 0 && v.length <= max
 const nombre = (v, min, max) => typeof v === 'number' && v >= min && v <= max
 // Un son = un fichier dans public/sons/, en m4a (AAC) ou mp3, 3 Mo max (l'app reste légère hors connexion)
-function verifierFichier(f, ici) {
-  if (!/^sons\/[a-z0-9-]+\.(m4a|mp3)$/.test(f)) return err.push(`${ici} : fichier = sons/<nom>.m4a ou .mp3`)
+function verifierFichier(f, ici, dossier = 'sons', maxMo = 3) {
+  if (!new RegExp(`^${dossier}/[a-z0-9-]+\\.(m4a|mp3)$`).test(f)) return err.push(`${ici} : fichier = ${dossier}/<nom>.m4a ou .mp3`)
   const chemin = new URL(`../public/${f}`, import.meta.url)
   if (!existsSync(chemin)) return err.push(`${ici} : ${f} introuvable dans public/`)
-  if (statSync(chemin).size > 3 * 1024 * 1024) err.push(`${ici} : ${f} dépasse 3 Mo`)
+  if (statSync(chemin).size > maxMo * 1024 * 1024) err.push(`${ici} : ${f} dépasse ${maxMo} Mo`)
 }
 
 if (!Number.isInteger(c.version) || c.version < 1) err.push('version : entier ≥ 1')
@@ -58,9 +58,22 @@ for (const [k, s] of (c.sons ?? []).entries()) {
   if (!Array.isArray(s.volume) || s.volume.length !== 2 || !s.volume.every((v) => nombre(v, 0, 1)))
     err.push(`${ici} : volume = [min, max] entre 0 et 1`)
   if (typeof s.houle !== 'boolean') err.push(`${ici} : houle = true ou false`)
+  if (s.usage && (!Array.isArray(s.usage) || s.usage.some((u) => !['seance', 'nuit'].includes(u)))) err.push(`${ici} : usage parmi seance, nuit`)
+  if (!s.nuit || !nombre(s.nuit.volume, 0, 1) || !nombre(s.nuit.sousHistoire, 0, 1) || !nombre(s.nuit.coupure, 50, 20000))
+    err.push(`${ici} : nuit = { volume 0-1, sousHistoire 0-1, coupure 50-20000 }`)
 }
 if (!sons.has('mer')) err.push('le son « mer » (son par défaut) doit exister')
 if (c.cloche) verifierFichier(c.cloche, 'cloche')
+
+const hist = new Set()
+for (const [k, h] of (c.histoires ?? []).entries()) {
+  const ici = `histoires[${k}] (${h.id ?? '?'})`
+  if (!/^[a-z0-9-]+$/.test(h.id ?? '') || hist.has(h.id)) err.push(`${ici} : id invalide ou en double`)
+  hist.add(h.id)
+  for (const champ of ['titre', 'auteur', 'lecteur', 'resume']) if (!texte(h[champ], 80)) err.push(`${ici} : ${champ} de 1 à 80 caractères`)
+  if (!nombre(h.duree, 60, 3600)) err.push(`${ici} : duree en secondes (60 à 3600)`)
+  verifierFichier(h.fichier, ici, 'histoires', 10)
+}
 
 for (const [k, n] of (c.nouveautes ?? []).entries()) {
   if (!Number.isInteger(n.version) || n.version > c.version) err.push(`nouveautes[${k}] : version entière ≤ ${c.version}`)
@@ -71,4 +84,4 @@ if (err.length) {
   console.error(`contenu.json invalide :\n- ${err.join('\n- ')}`)
   process.exit(1)
 }
-console.log(`contenu.json v${c.version} : ${c.techniques.length} techniques, ${c.sons.length} sons, ${c.nouveautes.length} nouveautés. OK`)
+console.log(`contenu.json v${c.version} : ${c.techniques.length} techniques, ${c.sons.length} sons, ${(c.histoires ?? []).length} histoires, ${c.nouveautes.length} nouveautés. OK`)

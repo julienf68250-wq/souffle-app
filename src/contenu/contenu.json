@@ -1,6 +1,10 @@
 {
-  "version": 3,
+  "version": 4,
   "nouveautes": [
+    {
+      "version": 4,
+      "texte": "Nouveau : « Écouter pour t'endormir ». Des histoires calmes lues par une voix humaine, ou un bruit (mer, pluie, bruit brun ou rose), qui baisse doucement puis s'arrête tout seul. Et tu peux dicter au lieu d'écrire pour vider ta tête."
+    },
     {
       "version": 3,
       "texte": "Nouveau : un programme sommeil fondé sur la TCC-I, le traitement de référence de l'insomnie. Agenda de 30 secondes le matin, quatre règles, et un guide « Je ne dors pas » pour la nuit. Les sons sont maintenant de vrais enregistrements."
@@ -16,10 +20,21 @@
       "nom": "Cohérence cardiaque",
       "pourquoi": "Six respirations par minute : le rythme où le cœur et le souffle se calent l'un sur l'autre.",
       "semaine": 0,
-      "moments": ["jour", "soir"],
+      "moments": [
+        "jour",
+        "soir"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 5, "vers": 1 },
-        { "mot": "Expire", "duree": 5, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 5,
+          "vers": 1
+        },
+        {
+          "mot": "Expire",
+          "duree": 5,
+          "vers": 0
+        }
       ]
     },
     {
@@ -28,11 +43,25 @@
       "pourquoi": "Deux inspirations par le nez, une longue expiration par la bouche : un des moyens les plus rapides de faire redescendre un pic de stress.",
       "semaine": 0,
       "urgence": true,
-      "moments": ["jour"],
+      "moments": [
+        "jour"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 2, "vers": 0.75 },
-        { "mot": "Encore un peu", "duree": 1, "vers": 1 },
-        { "mot": "Expire tout", "duree": 6, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 2,
+          "vers": 0.75
+        },
+        {
+          "mot": "Encore un peu",
+          "duree": 1,
+          "vers": 1
+        },
+        {
+          "mot": "Expire tout",
+          "duree": 6,
+          "vers": 0
+        }
       ]
     },
     {
@@ -40,10 +69,21 @@
       "nom": "Expiration longue",
       "pourquoi": "Expirer plus longtemps qu'on inspire ralentit le cœur et prépare au sommeil.",
       "semaine": 0,
-      "moments": ["soir", "reveil"],
+      "moments": [
+        "soir",
+        "reveil"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 4, "vers": 1 },
-        { "mot": "Expire", "duree": 6, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 4,
+          "vers": 1
+        },
+        {
+          "mot": "Expire",
+          "duree": 6,
+          "vers": 0
+        }
       ]
     },
     {
@@ -51,12 +91,30 @@
       "nom": "Respiration carrée",
       "pourquoi": "Quatre temps égaux et deux pauses : utile pour retrouver de la concentration avant une réunion.",
       "semaine": 1,
-      "moments": ["jour"],
+      "moments": [
+        "jour"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 4, "vers": 1 },
-        { "mot": "Garde l'air", "duree": 4, "vers": 1 },
-        { "mot": "Expire", "duree": 4, "vers": 0 },
-        { "mot": "Reste vide", "duree": 4, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 4,
+          "vers": 1
+        },
+        {
+          "mot": "Garde l'air",
+          "duree": 4,
+          "vers": 1
+        },
+        {
+          "mot": "Expire",
+          "duree": 4,
+          "vers": 0
+        },
+        {
+          "mot": "Reste vide",
+          "duree": 4,
+          "vers": 0
+        }
       ]
     },
     {
@@ -64,11 +122,26 @@
       "nom": "4-7-8",
       "pourquoi": "Une longue pause pleine puis huit secondes d'expiration : un rythme lent qui occupe l'esprit et l'éloigne des pensées.",
       "semaine": 2,
-      "moments": ["soir", "reveil"],
+      "moments": [
+        "soir",
+        "reveil"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 4, "vers": 1 },
-        { "mot": "Garde l'air", "duree": 7, "vers": 1 },
-        { "mot": "Expire", "duree": 8, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 4,
+          "vers": 1
+        },
+        {
+          "mot": "Garde l'air",
+          "duree": 7,
+          "vers": 1
+        },
+        {
+          "mot": "Expire",
+          "duree": 8,
+          "vers": 0
+        }
       ]
     },
     {
@@ -76,10 +149,21 @@
       "nom": "Expiration fredonnée",
       "pourquoi": "Expirer bouche fermée en fredonnant « mmm » allonge l'expiration et fait vibrer la gorge : un calmant simple et discret.",
       "semaine": 3,
-      "moments": ["jour", "soir"],
+      "moments": [
+        "jour",
+        "soir"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 4, "vers": 1 },
-        { "mot": "Mmm…", "duree": 7, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 4,
+          "vers": 1
+        },
+        {
+          "mot": "Mmm…",
+          "duree": 7,
+          "vers": 0
+        }
       ]
     },
     {
@@ -87,16 +171,137 @@
       "nom": "Vague lente",
       "pourquoi": "Moins de quatre respirations par minute, très amples : pour les réveils nocturnes, quand le corps est prêt à dormir mais pas la tête.",
       "semaine": 4,
-      "moments": ["reveil"],
+      "moments": [
+        "reveil"
+      ],
       "phases": [
-        { "mot": "Inspire", "duree": 6, "vers": 1 },
-        { "mot": "Laisse aller", "duree": 10, "vers": 0 }
+        {
+          "mot": "Inspire",
+          "duree": 6,
+          "vers": 1
+        },
+        {
+          "mot": "Laisse aller",
+          "duree": 10,
+          "vers": 0
+        }
       ]
     }
   ],
   "cloche": "sons/bol.m4a",
   "sons": [
-    { "id": "mer", "nom": "Mer", "fichier": "sons/mer.m4a", "bruit": "brun", "coupure": [700, 16000], "volume": [0.35, 1], "houle": true },
-    { "id": "pluie", "nom": "Pluie", "fichier": "sons/pluie.m4a", "bruit": "rose", "coupure": [16000, 16000], "volume": [0.9, 0.9], "houle": false }
+    {
+      "id": "mer",
+      "nom": "Mer",
+      "fichier": "sons/mer.m4a",
+      "bruit": "brun",
+      "coupure": [
+        700,
+        16000
+      ],
+      "volume": [
+        0.35,
+        1
+      ],
+      "houle": true,
+      "nuit": {
+        "volume": 0.55,
+        "sousHistoire": 0.16,
+        "coupure": 2500
+      }
+    },
+    {
+      "id": "pluie",
+      "nom": "Pluie",
+      "fichier": "sons/pluie.m4a",
+      "bruit": "rose",
+      "coupure": [
+        16000,
+        16000
+      ],
+      "volume": [
+        0.9,
+        0.9
+      ],
+      "houle": false,
+      "nuit": {
+        "volume": 0.7,
+        "sousHistoire": 0.2,
+        "coupure": 9000
+      }
+    },
+    {
+      "id": "brun",
+      "nom": "Bruit brun",
+      "bruit": "brun",
+      "coupure": [
+        1200,
+        1200
+      ],
+      "volume": [
+        0.5,
+        0.5
+      ],
+      "houle": false,
+      "usage": [
+        "nuit"
+      ],
+      "nuit": {
+        "volume": 0.45,
+        "sousHistoire": 0.12,
+        "coupure": 1200
+      }
+    },
+    {
+      "id": "rose",
+      "nom": "Bruit rose",
+      "bruit": "rose",
+      "coupure": [
+        6000,
+        6000
+      ],
+      "volume": [
+        0.4,
+        0.4
+      ],
+      "houle": false,
+      "usage": [
+        "nuit"
+      ],
+      "nuit": {
+        "volume": 0.35,
+        "sousHistoire": 0.1,
+        "coupure": 6000
+      }
+    }
+  ],
+  "histoires": [
+    {
+      "id": "etoiles",
+      "titre": "Les Étoiles",
+      "auteur": "Alphonse Daudet",
+      "lecteur": "Naf",
+      "resume": "Un berger veille sous la nuit de Provence.",
+      "fichier": "histoires/etoiles.m4a",
+      "duree": 714
+    },
+    {
+      "id": "phare",
+      "titre": "Le Phare des Sanguinaires",
+      "auteur": "Alphonse Daudet",
+      "lecteur": "Naf",
+      "resume": "Des nuits de mer et de vent, au pied d'un phare corse.",
+      "fichier": "histoires/phare.m4a",
+      "duree": 632
+    },
+    {
+      "id": "camargue",
+      "titre": "En Camargue",
+      "auteur": "Alphonse Daudet",
+      "lecteur": "Naf",
+      "resume": "Les marais, les oiseaux, les cabanes de roseaux.",
+      "fichier": "histoires/camargue.m4a",
+      "duree": 1068
+    }
   ]
 }

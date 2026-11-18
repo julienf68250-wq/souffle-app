@@ -1,0 +1,7 @@
+Lectures LibriVox, domaine public (https://librivox.org). Volume harmonisé, réencodées en AAC pour Souffle.
+Alphonse Daudet, « Lettres de mon moulin », lu par Naf :
+https://librivox.org/lettres-de-mon-moulin-by-alphonse-daudet-0901/
+https://archive.org/details/lettres_de_mon_moulin_naf_0901_librivox
+- etoiles.m4a   : « Les Étoiles »
+- phare.m4a     : « Le Phare des Sanguinaires »
+- camargue.m4a  : « En Camargue »

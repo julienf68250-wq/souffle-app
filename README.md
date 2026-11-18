@@ -12,6 +12,8 @@ Web app iPhone (PWA) pour le stress et l'endormissement. Données uniquement sur
 - **Choix automatique** : Souffle choisit la technique (stress ≥ 7 → soupir physiologique ; sinon nouveauté, puis la plus efficace sur toi). Une technique se débloque chaque semaine.
 - **Son** : mer générée qui suit la respiration, ou pluie avec cloche douce. Diagnostic : `window.__souffleAudio.rms()` dans la console.
 
+- **Écouter pour s'endormir** : histoires calmes du domaine public (Daudet, LibriVox) ou mer, pluie, bruit brun ou rose, avec arrêt automatique en fondu. Écran noir gardé allumé, car une web app iPhone se tait quand l'écran est verrouillé.
+- **Dictée** dans « Vider ma tête » et la liste du soir. Repli : le micro du clavier iOS.
 - **Programme sommeil (TCC-I)** : agenda du matin, 4 règles du contrôle du stimulus, compression du temps au lit sur demande avec garde-fous, guide « Je ne dors pas ». Bases scientifiques : [docs/RECHERCHE.md](docs/RECHERCHE.md).
 
 Enrichir le contenu : voir [ENRICHIR.md](ENRICHIR.md) (un seul fichier JSON, vérifié avant chaque build).

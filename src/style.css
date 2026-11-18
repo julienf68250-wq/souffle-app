@@ -420,6 +420,56 @@ input[type='time'] {
 .sommeil { display: flex; flex-direction: column; gap: 10px; }
 .sommeil .marees-graphe { margin-top: 4px; }
 
+/* ---------- Écouter pour s'endormir ---------- */
+.choix-liste { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.choix-liste legend { font: 600 15px/1.4 var(--sans); color: var(--ardoise); padding: 0; margin-bottom: 8px; }
+.choix-liste button {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--trait);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.choix-liste button strong { font: 400 20px/1.2 var(--serif); }
+.choix-liste button span { font-size: 14px; color: var(--ardoise); }
+.choix-liste button.actif { background: var(--eau); border-color: var(--eau); color: var(--sur-eau); }
+.choix-liste button.actif span { color: inherit; opacity: 0.85; }
+.puces button:disabled { opacity: 0.3; }
+.ecoute-noire {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  color: #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+}
+.ecoute-noire p { margin: 0; max-width: 26ch; font: 18px/1.4 var(--serif); }
+.ecoute-noire .lien { color: #3a3a3a; }
+
+/* ---------- Dictée ---------- */
+.dictee { display: flex; flex-direction: column; gap: 6px; }
+.dicter {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--trait);
+  font-size: 16px;
+}
+.dicter svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.dicter.actif { background: var(--eau); border-color: var(--eau); color: var(--sur-eau); animation: ecoute-pulse 1.6s ease-in-out infinite; }
+@keyframes ecoute-pulse { 50% { opacity: 0.75; } }
+
 /* ---------- Raccourci ---------- */
 .config summary { cursor: pointer; color: var(--ardoise); font-size: 16px; padding: 6px 0; }
 .config ol { padding-left: 22px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }

@@ -34,6 +34,8 @@ Base des choix de Souffle. Sources lues en texte intégral : recommandations AAS
 | Liste du lendemain au coucher | Scullin 2018 | Faible |
 | Respiration guidée (jour) | Laborde 2022, Balban 2023 | Fort pour le stress, non démontré pour le sommeil |
 | Sons pendant les séances seulement | Riedy 2021, Basner 2026 | Faible |
+| Histoire calme au coucher (distraction par l'imagerie) | Harvey & Payne 2002 : 41 personnes insomniaques, endormissement plus rapide qu'avec aucune consigne | Faible (1 essai, 1 nuit) |
+| Bruit ou histoire avec arrêt automatique (15 à 45 min, fondu de 2 min), jamais toute la nuit | Basner 2026 | Précaution |
 
 ### Règles de la compression
 
@@ -56,6 +58,15 @@ D'après l'AASM 2021 et l'ESRS 2023.
 - **Un rappel chaque semaine** : « Si tu somnoles, ne conduis pas. »
 - **Signes qui demandent de consulter :** ronflement avec pauses respiratoires, jambes sans repos, somnolence importante, humeur dépressive, comportements nocturnes anormaux, travail posté, grossesse.
 - **Idées suicidaires :** 3114, gratuit, 24 h/24.
+
+## Montre (Garmin) : pourquoi elle ne pilote pas le programme
+
+- **Les montres repèrent bien le sommeil, mais mal l'éveil.** Elles surestiment le temps de sommeil et l'efficacité, et sous-estiment les réveils nocturnes.
+  - vívosmart 4 : spécificité à l'éveil de 0,28.
+  - Étude de Garmin elle-même : 0,73.
+  - Aucune étude ne valide la Fenix 7 elle-même.
+- **Piloter la compression du temps au lit avec ces chiffres allongerait la fenêtre à tort.** L'ESRS 2023 déconseille les trackers dans la prise en charge de l'insomnie.
+- **Technique :** une web app iPhone n'a accès ni au Bluetooth ni à Apple Health. Garmin envoie à Apple Health le sommeil et la fréquence cardiaque, mais pas la VFC.
 
 ## Pas encore fait, et pourquoi
 
@@ -84,3 +95,4 @@ D'après l'AASM 2021 et l'ESRS 2023.
 - Hjetland GJ et al. Front Psychiatry 2025;16:1548273
 - Chang AM et al. PNAS 2015;112(4):1232-1237
 - Espie CA et al. BMJ Open 2014;4:e004183
+- Harvey AG, Payne S. Behav Res Ther 2002;40(3):267-277. doi:10.1016/S0005-7967(01)00012-2
