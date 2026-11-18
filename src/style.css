@@ -510,3 +510,20 @@ input[type='time'] {
   .eau .vague, .derive, .etoile, .maree { animation: none; }
   .bande, html, body, .echelle-btn { transition: none; }
 }
+
+/* Nouvelle version disponible */
+.bandeau-maj {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  z-index: 50;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--eau);
+  color: var(--sur-eau);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
