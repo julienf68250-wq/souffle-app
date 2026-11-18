@@ -1,6 +1,10 @@
 {
-  "version": 5,
+  "version": 6,
   "nouveautes": [
+    {
+      "version": 6,
+      "texte": "Histoires lues plus lentement, avec les lecteurs les plus calmes, et deux nouvelles ambiances pour s'endormir : un ruisseau de montagne et une nuit d'été au bord du Pacifique."
+    },
     {
       "version": 5,
       "texte": "Les histoires ont maintenant un lecteur (pause, avance, retour) et changent chaque soir : 36 lectures calmes, dont deux nouvelles chaque semaine. La mer et la pluie sont en vraie stéréo."
@@ -231,6 +235,52 @@
         "volume": 0.7,
         "sousHistoire": 0.4,
         "coupure": 9000
+      }
+    },
+    {
+      "id": "ruisseau",
+      "nom": "Ruisseau",
+      "fichier": "sons/ruisseau.m4a",
+      "bruit": "rose",
+      "coupure": [
+        16000,
+        16000
+      ],
+      "volume": [
+        0.75,
+        0.75
+      ],
+      "houle": false,
+      "usage": [
+        "nuit"
+      ],
+      "nuit": {
+        "volume": 0.8,
+        "sousHistoire": 0.2,
+        "coupure": 16000
+      }
+    },
+    {
+      "id": "nuit-ete",
+      "nom": "Nuit d'été",
+      "fichier": "sons/nuit-ete.m4a",
+      "bruit": "rose",
+      "coupure": [
+        16000,
+        16000
+      ],
+      "volume": [
+        0.8,
+        0.8
+      ],
+      "houle": false,
+      "usage": [
+        "nuit"
+      ],
+      "nuit": {
+        "volume": 1.0,
+        "sousHistoire": 0.2,
+        "coupure": 16000
       }
     },
     {

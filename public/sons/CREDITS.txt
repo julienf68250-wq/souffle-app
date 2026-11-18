@@ -8,3 +8,7 @@ pluie.m4a : « Light rain in the forest », Kiel (Allemagne), Tascam DR-100 + mi
 
 Bol chantant : synthétisé par l'app (stéréo, calculé sur l'appareil).
 Bruits brun et rose : générés par l'app (stéréo décorrélée).
+ruisseau.m4a : « Mountain brook in the winter », Targoszów (Pologne), micros DPA, WAV 24 bits / 48 kHz
+               https://archive.org/details/aporee_55335_63233 (Public Domain Mark 1.0)
+nuit-ete.m4a : « Night in Chacahua, crickets and seawaves », Laguna Chacahua (Mexique), par Félix Blume,
+               binaural Sanken COS-11D, https://archive.org/details/aporee_45364_51515 (Public Domain Mark 1.0)
