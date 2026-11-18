@@ -1,6 +1,10 @@
 {
-  "version": 2,
+  "version": 3,
   "nouveautes": [
+    {
+      "version": 3,
+      "texte": "Nouveau : un programme sommeil fondé sur la TCC-I, le traitement de référence de l'insomnie. Agenda de 30 secondes le matin, quatre règles, et un guide « Je ne dors pas » pour la nuit. Les sons sont maintenant de vrais enregistrements."
+    },
     {
       "version": 2,
       "texte": "Souffle choisit maintenant la technique pour toi, selon l'heure, ton stress et ce qui marche le mieux sur toi. Une nouvelle technique arrive chaque semaine, et la mer suit ta respiration."

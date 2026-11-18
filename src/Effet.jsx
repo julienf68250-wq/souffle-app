@@ -1,4 +1,5 @@
 import { sessions } from './stockage.js'
+import { agenda, calculer, duree, moyennes, septDerniersJours } from './sommeil.js'
 import { CONTENU, meilleure, prochaineTechnique, semaineCourante, statsParTechnique, techniquesDisponibles } from './contenu.js'
 
 const moyenne = (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null)
@@ -11,8 +12,9 @@ export default function Effet({ onFin }) {
   const tout = sessions()
   const notees = tout.filter((s) => s.type === 'souffle' && s.avant != null && s.apres != null)
   const baisse = moyenne(notees.map((s) => s.avant - s.apres))
-  const nuits = tout.filter((s) => s.type === 'nuit' && s.note != null).slice(-7)
-  const noteNuits = moyenne(nuits.map((n) => n.note))
+  const nuits = agenda().slice(-14)
+  const sept = moyennes(septDerniersJours())
+  const debutAgenda = moyennes(agenda().slice(0, 7))
   const st = statsParTechnique()
   const parTechnique = CONTENU.techniques.filter((t) => st[t.id])
   const best = meilleure()
@@ -75,15 +77,44 @@ export default function Effet({ onFin }) {
         </section>
       )}
 
-      <p className="constat">
-        {noteNuits == null ? (
-          <>Tes nuits s'afficheront ici, notées chaque matin.</>
-        ) : (
+      <section className="sommeil">
+        <h3 className="titre-section">Ton sommeil</h3>
+        {sept ? (
           <>
-            {nuits.length > 1 ? `Tes ${nuits.length} dernières nuits` : 'Ta dernière nuit'} : <b>{f1(noteNuits)} sur 10</b>.
+            <p className="constat">
+              Sur 7 jours : <b>{duree(sept.tst)}</b> de sommeil par nuit, efficacité <b>{Math.round(sept.eff * 100)} %</b>.
+            </p>
+            <p className="aide">
+              Endormissement en {Math.round(sept.latence)} min, {Math.round(sept.eveil)} min d'éveil dans la nuit en moyenne.
+              {debutAgenda && agenda().length >= 14 && ` Première semaine : efficacité ${Math.round(debutAgenda.eff * 100)} %.`} Objectif de la TCC-I : 85 % ou plus.
+            </p>
+            <div className="marees-graphe">
+              <div className="marees-axe" aria-hidden="true">
+                <span>100</span>
+                <span>50</span>
+                <span>0</span>
+              </div>
+              <div className="marees-colonnes">
+                {nuits.map((n) => {
+                  const e = calculer(n).eff
+                  return (
+                    <div key={n.date} className="colonne" role="img" aria-label={`${n.date} : efficacité ${Math.round(e * 100)} %`}>
+                      <div className="colonne-eau" style={{ height: `${e * 100}%` }} />
+                      <div className="colonne-repere objectif" style={{ bottom: '85%' }} />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <p className="marees-legende">
+              <span><i className="pastille pastille-eau" /> efficacité de la nuit</span>
+              <span><i className="pastille pastille-repere" /> objectif 85 %</span>
+            </p>
           </>
+        ) : (
+          <p className="aide">Note tes nuits chaque matin (accueil, « Ta nuit en 30 secondes ») : ton sommeil s'affichera ici.</p>
         )}
-      </p>
+      </section>
 
       <p className="aide">
         Semaine {semaineCourante() + 1}. {nbDispo} technique{nbDispo > 1 ? 's' : ''} débloquée{nbDispo > 1 ? 's' : ''} sur {CONTENU.techniques.length}.

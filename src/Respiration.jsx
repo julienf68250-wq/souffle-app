@@ -91,9 +91,8 @@ export default function Respiration({ technique, duree, sombre = false, onFin, o
           </p>
         )}
         <div className="maree-ligne">
-          <span className="reste">
-            {Math.floor(reste / 60)}:{String(reste % 60).padStart(2, '0')}
-          </span>
+          {/* La nuit, aucune durée affichée : surveiller le temps entretient l'éveil (Tang 2007) */}
+          <span className="reste">{sombre ? '' : `${Math.floor(reste / 60)}:${String(reste % 60).padStart(2, '0')}`}</span>
           <div className="actions">
             <button onClick={changerSon}>{son ? `Son : ${son.nom}` : 'Son coupé'}</button>
             <button onClick={onStop}>Arrêter</button>

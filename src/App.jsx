@@ -4,11 +4,14 @@ import Vider from './Vider.jsx'
 import Dormir from './Dormir.jsx'
 import Reveil from './Reveil.jsx'
 import Effet from './Effet.jsx'
-import Echelle from './Echelle.jsx'
+import Agenda from './Agenda.jsx'
+import Programme from './Programme.jsx'
+import Consulter from './Consulter.jsx'
 import Vague from './Vague.jsx'
 import Astre, { periode } from './Ciel.jsx'
 import Installer from './Installer.jsx'
-import { ajouterSession, majSession, notes, nuitANoter, sessions } from './stockage.js'
+import { ajouterSession, notes, sessions } from './stockage.js'
+import { etatProgramme, nuitANoter } from './sommeil.js'
 import { marquerNouveautesVues, nouveautesAAfficher, nouveautesNonEssayees, recommander } from './contenu.js'
 import { preparerSeance } from './pleinEcran.js'
 
@@ -56,6 +59,12 @@ export default function App() {
       return <Reveil technique={ecran.technique} onFin={accueil} versVider={() => setEcran({ nom: 'vider' })} />
     case 'effet':
       return <Effet onFin={accueil} />
+    case 'agenda':
+      return <Agenda onFin={accueil} />
+    case 'programme':
+      return <Programme onFin={accueil} versConsulter={() => setEcran({ nom: 'consulter', retour: 'programme' })} />
+    case 'consulter':
+      return <Consulter onFin={() => setEcran({ nom: ecran.retour ?? 'accueil' })} />
     default:
       return <Accueil nuit={nuit} aller={setEcran} />
   }
@@ -64,7 +73,9 @@ export default function App() {
 // Trois bandes d'eau, de la surface au fond : souffler, vider sa tête, dormir.
 // Le jour, la surface est la plus haute ; le soir, c'est le fond.
 function Accueil({ nuit, aller }) {
-  const [aNoter, setANoter] = useState(nuitANoter)
+  const aNoter = nuitANoter()
+  const prog = etatProgramme()
+  const soir = periode() === 'crepuscule' || nuit
   const [annonces, setAnnonces] = useState(nouveautesAAfficher)
   const nbNotes = notes().length
   const nbSeances = sessions().filter((s) => s.type === 'souffle').length
@@ -85,10 +96,17 @@ function Accueil({ nuit, aller }) {
         <p className="nom">Souffle</p>
         <h1>{SALUTS[periode()]}</h1>
 
+        {soir && prog && (
+          <p className="consigne">
+            {prog.coucher ? `Au lit pas avant ${prog.coucher}, et seulement si le sommeil est là.` : 'Au lit seulement quand le sommeil est là.'} Lever à{' '}
+            {prog.lever}.
+          </p>
+        )}
+
         {estAuLit() && (
           <button className="reveil" onClick={reveil}>
-            Réveil nocturne
-            <span>5 minutes très lentes, écran sombre, rien à noter</span>
+            Je ne dors pas
+            <span>Ce que recommandent les études, sans regarder l'heure</span>
           </button>
         )}
 
@@ -108,17 +126,10 @@ function Accueil({ nuit, aller }) {
         )}
 
         {aNoter && (
-          <div className="matin">
-            <p>Ta nuit, de 0 à 10 ?</p>
-            <Echelle
-              gauche="horrible"
-              droite="parfaite"
-              onChoix={(v) => {
-                majSession(aNoter.t, { note: v })
-                setANoter(null)
-              }}
-            />
-          </div>
+          <button className="matin-carte" onClick={() => aller({ nom: 'agenda' })}>
+            <strong>Ta nuit, en 30 secondes</strong>
+            <span>L'agenda du matin : la base de ce qui marche contre l'insomnie</span>
+          </button>
         )}
       </header>
 
@@ -157,11 +168,16 @@ function Accueil({ nuit, aller }) {
           </div>
           <button className="bande-action" onClick={() => aller({ nom: 'dormir' })}>
             <strong>Dormir</strong>
-            <span>Vider sa tête, souffler lentement, lancer le son</span>
+            <span>Liste de demain, souffle lent, puis au lit si le sommeil est là</span>
           </button>
-          <button className="lien" onClick={() => aller({ nom: 'effet' })}>
-            {nbSeances > 0 ? `Voir mon effet sur ${nbSeances} séance${nbSeances > 1 ? 's' : ''}` : 'Voir mon effet'}
-          </button>
+          <div className="liens-bande">
+            <button className="lien" onClick={() => aller({ nom: 'programme' })}>
+              {prog ? `Programme sommeil, semaine ${prog.semaine}` : 'Démarrer le programme sommeil'}
+            </button>
+            <button className="lien" onClick={() => aller({ nom: 'effet' })}>
+              {nbSeances > 0 ? `Voir mon effet sur ${nbSeances} séance${nbSeances > 1 ? 's' : ''}` : 'Voir mon effet'}
+            </button>
+          </div>
         </section>
       </div>
     </main>

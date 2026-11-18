@@ -3,15 +3,18 @@ import Respiration from './Respiration.jsx'
 import { ajouterNote, ajouterSession } from './stockage.js'
 import { recommander } from './contenu.js'
 import { preparerSeance } from './pleinEcran.js'
+import { etatProgramme } from './sommeil.js'
 
 const RACCOURCI = 'Dormir'
 
-// Rituel du coucher : vider sa tête, 2 min de souffle lent (optionnel), lancer la nuit.
+// Rituel du coucher, à faire HORS du lit : liste du lendemain (Scullin 2018),
+// 2 min de souffle lent (optionnel), puis au lit seulement si le sommeil est là.
 export default function Dormir({ onFin }) {
   const [etape, setEtape] = useState('vider')
   const [texte, setTexte] = useState('')
   const [technique] = useState(() => recommander('soir'))
   const [aSouffle, setASouffle] = useState(false)
+  const prog = etatProgramme()
 
   const lancerNuit = () => {
     ajouterSession({ type: 'nuit', t: Date.now(), technique: aSouffle ? technique.id : undefined })
@@ -25,9 +28,12 @@ export default function Dormir({ onFin }) {
   if (etape === 'vider')
     return (
       <main className="ecran">
-        <h2>Qu'est-ce qui tourne dans ta tête ?</h2>
-        <p className="aide">Note-le en vrac. Demain matin, ce sera là. Cette nuit, tu n'en as plus besoin.</p>
-        <textarea value={texte} onChange={(e) => setTexte(e.target.value)} rows={5} />
+        <h2>Ta liste pour demain</h2>
+        <p className="aide">
+          Écris précisément ce que tu as à faire demain et les jours suivants. Dans une étude, 5 minutes de liste au coucher ont fait gagner une dizaine de minutes
+          d'endormissement.
+        </p>
+        <textarea value={texte} onChange={(e) => setTexte(e.target.value)} rows={5} placeholder="Appeler le garage avant 10 h, relire le devis…" />
         <button
           className="principal"
           onClick={() => {
@@ -50,7 +56,7 @@ export default function Dormir({ onFin }) {
       <main className="ecran">
         <h2>Deux minutes de souffle lent ?</h2>
         <p className="aide">
-          <b>{technique.nom}.</b> {technique.pourquoi}
+          Assis, hors du lit. <b>{technique.nom}.</b> {technique.pourquoi}
         </p>
         <button
           className="principal"
@@ -63,30 +69,36 @@ export default function Dormir({ onFin }) {
           Souffler 2 minutes
         </button>
         <button className="secondaire" onClick={() => setEtape('nuit')}>
-          Passer, je vais au lit
+          Passer
         </button>
       </main>
     )
 
   return (
     <main className="ecran">
-      <h2>Bonne nuit.</h2>
-      <p className="aide">Une fois le son lancé, pose le téléphone écran contre le lit.</p>
+      <h2>Au lit, si le sommeil est là.</h2>
+      <p className="aide">
+        {prog?.coucher && `Pas avant ${prog.coucher}. `}
+        Paupières lourdes : vas-y. Sinon, reste au calme hors du lit encore un moment.
+        {prog && ` Lever demain à ${prog.lever}, même si la nuit est mauvaise.`}
+      </p>
       <button className="principal grand" onClick={lancerNuit}>
         Lancer la nuit
       </button>
+      <p className="aide">Puis pose le téléphone loin du lit, écran retourné.</p>
       <details className="config">
         <summary>Préparer le raccourci « {RACCOURCI} » (une seule fois)</summary>
         <ol>
           <li>Ouvre l'app <b>Raccourcis</b>, touche <b>+</b> et nomme le raccourci exactement <b>{RACCOURCI}</b>.</li>
           <li>Ajoute <b>Définir la concentration</b> : Sommeil, activé.</li>
-          <li>Ajoute <b>Définir les sons d'arrière-plan</b> : activé.</li>
-          <li>Ajoute <b>Changer le son d'arrière-plan</b> : Pluie, Océan ou Bruit sombre.</li>
-          <li>Ajoute <b>Régler le volume des sons d'arrière-plan</b> : 30 à 40 %.</li>
           <li>Facultatif : <b>Régler la luminosité</b> à 0 %.</li>
+          <li>
+            Seulement si ta chambre est bruyante : <b>Définir les sons d'arrière-plan</b> (activé), son Pluie ou Océan, volume bas.
+          </li>
         </ol>
         <p className="aide">
-          Le son tourne toute la nuit à bas volume, ce qui aide aussi à se rendormir. Pour l'arrêter : Centre de contrôle, icône oreille.
+          Pourquoi pas de son toute la nuit par défaut : les preuves d'un bénéfice sont très faibles, et une étude récente montre qu'un bruit rose continu réduit le
+          sommeil paradoxal. Il sert surtout à masquer les bruits extérieurs.
         </p>
       </details>
       <div className="pied">

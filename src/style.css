@@ -358,6 +358,68 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
 .tech-n { color: var(--ardoise); }
 .tech-b { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
 
+/* ---------- Programme sommeil ---------- */
+.titre-section, .nom-ecran, .legende { font: 600 15px/1.4 var(--sans); color: var(--ardoise); margin: 8px 0 6px; }
+.consigne { margin: 0; font: 19px/1.35 var(--serif); max-width: 30ch; }
+.matin-carte, .reveil { text-align: left; }
+.matin-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--eau);
+  color: var(--sur-eau);
+}
+.matin-carte strong { font: 400 22px/1.2 var(--serif); }
+.matin-carte span { font-size: 15px; opacity: 0.85; }
+.liens-bande { display: flex; flex-direction: column; align-items: flex-start; margin-top: 8px; }
+.liens-bande .lien { color: inherit; opacity: 0.75; padding: 8px 0; text-decoration-color: currentColor; }
+
+.agenda { gap: 20px; }
+.champs-heures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.champs-heures label, .ligne-reglage, .grande-heure { display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: var(--ardoise); font-weight: 600; }
+input[type='time'] {
+  font: 400 22px/1.2 var(--serif);
+  color: var(--encre);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--trait);
+  padding: 6px 0;
+  width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.grande-heure input[type='time'] { font-size: 44px; max-width: 220px; }
+.champs-heures input[type='time'] { font-size: 19px; }
+.ligne-reglage { flex-direction: row; align-items: center; justify-content: space-between; }
+.ligne-reglage input[type='time'] { width: 120px; text-align: right; }
+.puces { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.puces legend { font: 600 15px/1.4 var(--sans); color: var(--ardoise); padding: 0; margin-bottom: 8px; }
+.puces button, .oui-non button {
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--trait);
+  font-size: 15px;
+  transition: background 0.2s, color 0.2s;
+}
+.puces button.actif, .oui-non button.actif { background: var(--eau); border-color: var(--eau); color: var(--sur-eau); }
+.resume { margin: 0; font-size: 16px; color: var(--ardoise); }
+.resume b { color: var(--encre); }
+
+.regles { padding-left: 22px; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 16px; line-height: 1.45; max-width: 46ch; }
+.question { border-bottom: 1px solid var(--trait); padding: 4px 0 14px; }
+.question p { margin: 0 0 10px; font-size: 16px; }
+.oui-non { display: flex; gap: 8px; }
+.oui-non button { min-width: 72px; }
+.alerte { margin: 0; padding: 12px 14px; border-left: 3px solid var(--ambre); background: color-mix(in srgb, var(--ambre) 10%, transparent); font-size: 16px; border-radius: 0 10px 10px 0; }
+.annonce-texte { margin: 0; border-left: 2px solid var(--ambre); padding-left: 14px; font-size: 16px; }
+.signes { padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
+.colonne-repere.objectif { background: var(--ambre); opacity: 0.8; height: 2px; }
+.sommeil { display: flex; flex-direction: column; gap: 10px; }
+.sommeil .marees-graphe { margin-top: 4px; }
+
 /* ---------- Raccourci ---------- */
 .config summary { cursor: pointer; color: var(--ardoise); font-size: 16px; padding: 6px 0; }
 .config ol { padding-left: 22px; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; font-size: 16px; }
