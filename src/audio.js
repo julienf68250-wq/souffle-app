@@ -210,6 +210,8 @@ export function arreterAmbiance(fondu = 1.5) {
 // Histoire (élément audio, lu en flux) et/ou ambiance, puis baisse douce sur les 2 dernières
 // minutes, programmée dans le moteur audio lui-même.
 let ecoute = null
+// Les histoires sont lues 12 % plus lentement (voix du soir)
+export const RYTHME_HISTOIRE = 0.88
 
 // Histoire : lue jusqu'au bout (le lecteur permet pause, avance, retour), fondu à la fin.
 // Son seul : minuterie, baisse douce sur les 2 dernières minutes. Jamais les deux ensemble.
@@ -227,15 +229,34 @@ export function demarrerEcoute({ son, histoire, minutes, onFin }) {
     el.src = histoire.url ?? new URL(histoire.fichier, document.baseURI).href
     el.preload = 'auto'
     // Volume harmonisé (gain mesuré à l'avance) + limiteur pour ne jamais saturer
+    // Voix du soir : débit ralenti (hauteur conservée), plus de chaleur, moins de dureté
+    el.defaultPlaybackRate = RYTHME_HISTOIRE
+    el.playbackRate = RYTHME_HISTOIRE
+    el.preservesPitch = true
+    el.webkitPreservesPitch = true
+    el.addEventListener('play', () => (el.playbackRate = RYTHME_HISTOIRE))
     const g = ctx.createGain()
-    g.gain.value = Math.pow(10, (histoire.gain ?? 0) / 20)
+    g.gain.value = Math.pow(10, ((histoire.gain ?? 0) - 2) / 20)
+    const graves = ctx.createBiquadFilter()
+    graves.type = 'lowshelf'
+    graves.frequency.value = 200
+    graves.gain.value = 2.5
+    const presence = ctx.createBiquadFilter()
+    presence.type = 'peaking'
+    presence.frequency.value = 3200
+    presence.Q.value = 0.9
+    presence.gain.value = -3
+    const aigus = ctx.createBiquadFilter()
+    aigus.type = 'highshelf'
+    aigus.frequency.value = 6500
+    aigus.gain.value = -6
     const limiteur = ctx.createDynamicsCompressor()
     limiteur.threshold.value = -8
     limiteur.knee.value = 6
     limiteur.ratio.value = 8
     limiteur.attack.value = 0.003
     limiteur.release.value = 0.25
-    ctx.createMediaElementSource(el).connect(g).connect(limiteur)
+    ctx.createMediaElementSource(el).connect(g).connect(graves).connect(presence).connect(aigus).connect(limiteur)
     brancher(limiteur, 0) // voix sans réverbération : l'écho gênait (retour de JF)
     el.addEventListener('ended', () => {
       arreterEcoute(3)
@@ -345,4 +366,4 @@ export function rms() {
   return Math.sqrt(a.reduce((s, x) => s + x * x, 0) / a.length)
 }
 if (typeof window !== 'undefined')
-  window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms, ecoute: () => !!ecoute, source: () => (amb ? (amb.source.buffer.numberOfChannels === 2 ? 'fichier' : 'genere') : 'aucune') }
+  window.__souffleAudio = { etat: () => ctx?.state ?? 'absent', rms, ecoute: () => !!ecoute, vitesse: () => ecoute?.el?.playbackRate ?? null, source: () => (amb ? (amb.source.buffer.numberOfChannels === 2 ? 'fichier' : 'genere') : 'aucune') }

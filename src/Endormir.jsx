@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { CONTENU, dejaEcoutee, estNouvelle, histoireDuSoir, histoiresDisponibles, prochainesHistoires, sonParId } from './contenu.js'
-import { arreterEcoute, demarrerEcoute } from './audio.js'
+import { RYTHME_HISTOIRE, arreterEcoute, demarrerEcoute } from './audio.js'
 import { preparerSeance } from './pleinEcran.js'
 import { ajouterSession, majSession } from './stockage.js'
 
 const MINUTERIES = [15, 30, 45]
-const minutesDe = (s) => Math.round(s / 60)
+// Durée réelle d'écoute d'une histoire, lue ralentie
+const minutesEcoute = (h) => Math.round(h.duree / RYTHME_HISTOIRE / 60)
 const mmss = (s) => {
   const t = Math.max(0, Math.floor(s || 0))
   return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`
@@ -47,7 +48,7 @@ export default function Endormir({ onFin }) {
         setFini(true)
       },
     })
-    ajouterSession({ type: 'ecoute', t, histoire: h?.id, son: h ? null : sonId, minutes: h ? minutesDe(h.duree) : minutes })
+    ajouterSession({ type: 'ecoute', t, histoire: h?.id, son: h ? null : sonId, minutes: h ? minutesEcoute(h) : minutes })
     setFini(false)
     setLecture({ el, histoire: h, t })
   }
@@ -93,7 +94,7 @@ export default function Endormir({ onFin }) {
               {estNouvelle(histoire) && <em className="nouvelle">nouvelle</em>}
             </strong>
             <span>
-              {histoire.resume} {minutesDe(histoire.duree)} min, {histoire.auteur}, lu par {histoire.lecteur}.
+              {histoire.resume} {minutesEcoute(histoire)} min, {histoire.auteur}, lu par {histoire.lecteur}.
             </span>
           </button>
         )}
@@ -123,7 +124,7 @@ export default function Endormir({ onFin }) {
                       {estNouvelle(h) && <em className="nouvelle">nouvelle</em>}
                     </span>
                     <span className="meta-h">
-                      {h.auteur}, {minutesDe(h.duree)} min{dejaEcoutee(h) ? ', déjà écoutée' : ''}
+                      {h.auteur}, {minutesEcoute(h)} min{dejaEcoutee(h) ? ', déjà écoutée' : ''}
                     </span>
                   </button>
                 </li>
@@ -161,7 +162,7 @@ export default function Endormir({ onFin }) {
 
       <button className="principal grand" onClick={lancer} disabled={mode === 'histoire' && !histoire}>
         {mode === 'histoire' ? histoire?.titre : sonParId(sonId)?.nom}
-        <small>{mode === 'histoire' ? `${minutesDe(histoire?.duree ?? 0)} min, fondu à la fin` : `arrêt en douceur dans ${minutes} min`}</small>
+        <small>{mode === 'histoire' ? `${histoire ? minutesEcoute(histoire) : 0} min, voix ralentie, fondu à la fin` : `arrêt en douceur dans ${minutes} min`}</small>
       </button>
       <p className="aide">
         L'écran reste allumé en noir pendant l'écoute : sur iPhone, une web app se tait quand l'écran se verrouille.
@@ -265,8 +266,8 @@ function Lecteur({ el, histoire, onArreter }) {
         onKeyUp={(e) => aller(Number(e.target.value))}
       />
       <div className="temps">
-        <span>{mmss(pos)}</span>
-        <span>{charge && !enPause ? 'chargement…' : `−${mmss(duree - pos)}`}</span>
+        <span>{mmss(pos / RYTHME_HISTOIRE)}</span>
+        <span>{charge && !enPause ? 'chargement…' : `−${mmss((duree - pos) / RYTHME_HISTOIRE)}`}</span>
       </div>
       <div className="commandes">
         <button onClick={() => deplacer(-15)} aria-label="Reculer de 15 secondes">
