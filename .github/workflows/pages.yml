@@ -1,4 +1,7 @@
-# Publie l'app sur GitHub Pages à chaque push sur main (vérification du contenu incluse).
+# À chaque push sur main : vérifie le contenu, compile, puis publie dist/
+# dans le dépôt public julienf68250-wq/souffle-app (GitHub Pages).
+# Le code source reste dans ce dépôt privé. La publication n'a lieu que si le
+# secret DEPLOY_KEY (clé limitée au seul dépôt souffle-app) est configuré.
 name: Publier Souffle
 
 on:
@@ -8,19 +11,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: publication
   cancel-in-progress: true
 
 jobs:
   publier:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,8 +27,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - name: Clé de publication présente ?
+        id: cle
+        env:
+          K: ${{ secrets.DEPLOY_KEY }}
+        run: echo "ok=$([ -n "$K" ] && echo 1 || echo 0)" >> "$GITHUB_OUTPUT"
+      - if: steps.cle.outputs.ok == '1'
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-      - id: deploiement
-        uses: actions/deploy-pages@v4
+          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          external_repository: julienf68250-wq/souffle-app
+          publish_branch: main
+          publish_dir: ./dist
+          commit_message: Publication
