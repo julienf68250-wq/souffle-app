@@ -42,8 +42,12 @@ export function deverrouillerAudio() {
 }
 
 // Adresses des sons, pour la mise en cache hors connexion
+// Seuls les sons des séances sont mis en cache d'avance ; les ambiances de nuit le sont
+// à leur première écoute (inutile de télécharger 20 Mo à la première visite).
 export const urlsSons = () =>
-  [...CONTENU.sons.map((s) => s.fichier), CONTENU.cloche].filter(Boolean).map((u) => new URL(u, document.baseURI).href)
+  CONTENU.sons
+    .filter((s) => s.fichier && (!s.usage || s.usage.includes('seance')))
+    .map((s) => new URL(s.fichier, document.baseURI).href)
 
 // Raccord de boucle sans clic : la fin se fond dans le début, sur chaque canal
 function boucler(buf, fondu) {
