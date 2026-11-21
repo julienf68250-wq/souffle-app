@@ -1,6 +1,6 @@
 # Souffle
 
-**En ligne : https://julienf68250-wq.github.io/souffle-app/** (publication automatique à chaque push sur main : le code reste dans ce dépôt privé, seule l'app compilée part dans le dépôt public `souffle-app`).
+**En ligne : https://julienf68250-wq.github.io/souffle-app/** (publication automatique par GitHub Actions à chaque push sur main ; source et site publié sont dans ce seul dépôt `souffle-app`).
 
 Web app iPhone (PWA) pour le stress et l'endormissement. Données uniquement sur le téléphone (localStorage).
 
