@@ -11,7 +11,7 @@ import Endormir from './Endormir.jsx'
 import Vague from './Vague.jsx'
 import Astre, { periode } from './Ciel.jsx'
 import Installer from './Installer.jsx'
-import { ajouterSession, notes, sessions } from './stockage.js'
+import { ajouterSession, ecrireTheme, lireTheme, notes, sessions } from './stockage.js'
 import { etatProgramme, nuitANoter } from './sommeil.js'
 import { marquerNouveautesVues, nouveautesAAfficher, nouveautesNonEssayees, recommander } from './contenu.js'
 import { preparerSeance } from './pleinEcran.js'
@@ -34,6 +34,8 @@ const estAuLit = () => {
 export default function App() {
   const [ecran, setEcran] = useState({ nom: 'accueil' })
   const [nuit, setNuit] = useState(estNuit)
+  const [theme, setTheme] = useState(lireTheme)
+  const sombre = theme === 'sombre' || nuit
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -43,9 +45,14 @@ export default function App() {
     return () => clearInterval(t)
   }, [])
   useEffect(() => {
-    document.documentElement.classList.toggle('nuit', nuit)
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', nuit ? '#121729' : '#dde4e3')
-  }, [nuit])
+    document.documentElement.classList.toggle('nuit', sombre)
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', sombre ? '#121729' : '#dde4e3')
+  }, [sombre])
+  const basculerTheme = () => {
+    const t = theme === 'sombre' ? 'auto' : 'sombre'
+    ecrireTheme(t)
+    setTheme(t)
+  }
 
   const accueil = () => setEcran({ nom: 'accueil' })
 
@@ -69,13 +76,13 @@ export default function App() {
     case 'consulter':
       return <Consulter onFin={() => setEcran({ nom: ecran.retour ?? 'accueil' })} />
     default:
-      return <Accueil nuit={nuit} aller={setEcran} />
+      return <Accueil nuit={nuit} aller={setEcran} theme={theme} basculerTheme={basculerTheme} />
   }
 }
 
 // Trois bandes d'eau, de la surface au fond : souffler, vider sa tête, dormir.
 // Le jour, la surface est la plus haute ; le soir, c'est le fond.
-function Accueil({ nuit, aller }) {
+function Accueil({ nuit, aller, theme, basculerTheme }) {
   const aNoter = nuitANoter()
   const prog = etatProgramme()
   const soir = periode() === 'crepuscule' || nuit
@@ -182,6 +189,9 @@ function Accueil({ nuit, aller }) {
             </button>
             <button className="lien" onClick={() => aller({ nom: 'effet' })}>
               {nbSeances > 0 ? `Voir mon effet sur ${nbSeances} séance${nbSeances > 1 ? 's' : ''}` : 'Voir mon effet'}
+            </button>
+            <button className="lien" onClick={basculerTheme}>
+              {theme === 'sombre' ? 'Thème clair en journée' : 'Mode sombre tout le temps'}
             </button>
           </div>
         </section>

@@ -25,9 +25,9 @@ const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t)
 
 // Ciel de brume au-dessus d'une eau ondulée (même motif que l'app).
 function png(size) {
-  const ciel = [221, 228, 227]
-  const surface = [95, 141, 145]
-  const fond = [45, 89, 96]
+  const ciel = [18, 23, 41]
+  const surface = [59, 113, 120]
+  const fond = [24, 44, 64]
   const ligne = size * 3 + 1
   const raw = Buffer.alloc(ligne * size)
   for (let y = 0; y < size; y++) {

@@ -5,6 +5,7 @@ export const CLES = {
   son: 'souffle.son',
   debut: 'souffle.debut',
   versionVue: 'souffle.version-vue',
+  theme: 'souffle.theme',
 }
 
 export function lire(cle, defaut) {
@@ -53,3 +54,7 @@ export function nuitANoter() {
   const n = [...sessions()].reverse().find((s) => s.type === 'nuit' && s.t > limite)
   return n && n.note == null ? n : null
 }
+
+// Thème : 'sombre' (par défaut, choix de JF) ou 'auto' (clair le jour, sombre de 21 h à 6 h)
+export const lireTheme = () => lire(CLES.theme, 'sombre')
+export const ecrireTheme = (t) => ecrire(CLES.theme, t)

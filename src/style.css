@@ -171,6 +171,11 @@ textarea::placeholder { color: var(--ardoise); opacity: 0.6; }
 :root[data-ciel='aube'] { --ciel-haut: #ecdfe0; }
 :root[data-ciel='crepuscule'] { --ciel-haut: #ead6cc; }
 :root[data-ciel='nuit'] { --ciel-haut: #090c1a; }
+/* Mode sombre en journée : le ciel garde la teinte de l'heure, en version sombre */
+:root.nuit[data-ciel='aube'] { --ciel-haut: #241d34; }
+:root.nuit[data-ciel='jour'] { --ciel-haut: #13203a; }
+:root.nuit[data-ciel='crepuscule'] { --ciel-haut: #2c1e2f; }
+:root.nuit .soleil circle { fill: #e8d6b2; filter: drop-shadow(0 0 18px rgba(232, 214, 178, 0.35)); }
 
 .ciel { position: relative; background: linear-gradient(to bottom, var(--ciel-haut), var(--ciel)); }
 .ciel > *:not(.astres) { position: relative; }

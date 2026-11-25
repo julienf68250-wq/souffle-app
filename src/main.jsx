@@ -10,7 +10,13 @@ import './style.css'
 
 // Thème posé avant le premier rendu, sinon le passage jour → nuit se joue au chargement
 const h = new Date().getHours()
-document.documentElement.classList.toggle('nuit', h >= 21 || h < 6)
+let themeSombre = true
+try {
+  themeSombre = (JSON.parse(localStorage.getItem('souffle.theme')) ?? 'sombre') === 'sombre'
+} catch {
+  /* stockage indisponible : sombre par défaut */
+}
+document.documentElement.classList.toggle('nuit', themeSombre || h >= 21 || h < 6)
 document.documentElement.dataset.ciel = periode()
 
 createRoot(document.getElementById('root')).render(
