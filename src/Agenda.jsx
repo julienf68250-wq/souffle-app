@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Echelle from './Echelle.jsx'
-import { aujourdhui, calculer, derniereNuit, duree, enregistrerNuit, programme } from './sommeil.js'
+import { agenda, aujourdhui, calculer, derniereNuit, duree, enregistrerNuit, libelleNuit, programme } from './sommeil.js'
 
 const LATENCES = [5, 15, 30, 45, 60, 90]
 const EVEILS = [0, 10, 30, 60, 90, 120]
@@ -8,24 +8,26 @@ const libelle = (m, max) => (m >= max ? `${m} min et +` : m === 0 ? 'aucun' : `$
 
 // Agenda du sommeil (base de la TCC-I) : 30 secondes le matin, à l'estime.
 // Prérempli avec la nuit précédente pour limiter les gestes.
-export default function Agenda({ onFin }) {
-  const prec = derniereNuit()
+// `date` = jour du lever ; une nuit oubliée se rattrape (7 jours) ou se corrige.
+export default function Agenda({ onFin, date = aujourdhui() }) {
+  const existante = agenda().find((x) => x.date === date)
+  const prec = existante ?? derniereNuit()
   const p = programme()
   const [n, setN] = useState({
-    date: aujourdhui(),
+    date,
     coucher: prec?.coucher ?? '23:00',
     latence: prec?.latence ?? 15,
     eveil: prec?.eveil ?? 0,
     reveil: prec?.reveil ?? p?.lever ?? '06:30',
     lever: prec?.lever ?? p?.lever ?? '06:45',
-    qualite: null,
+    qualite: existante?.qualite ?? null,
   })
   const maj = (champ) => (v) => setN((x) => ({ ...x, [champ]: v }))
   const c = calculer(n)
 
   return (
     <main className="ecran agenda">
-      <h2>Ta nuit, en 30 secondes</h2>
+      <h2>{date === aujourdhui() ? 'Ta nuit, en 30 secondes' : `Ta nuit ${libelleNuit(date)}`}</h2>
       <p className="aide">À l'estime. La nuit, ne regarde pas l'heure : c'est le matin qu'on note.</p>
 
       <div className="champs-heures">

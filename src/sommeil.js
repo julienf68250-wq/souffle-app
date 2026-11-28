@@ -63,6 +63,25 @@ export function nuitANoter() {
 
 export const derniereNuit = () => agenda().at(-1) ?? null
 
+// « du lundi 24 au mardi 25 nov. » pour une date de lever
+export function libelleNuit(iso) {
+  const lever = new Date(iso + 'T12:00')
+  const veille = new Date(lever.getTime() - JOUR)
+  const j = (d, opts) => d.toLocaleDateString('fr-FR', opts)
+  return `du ${j(veille, { weekday: 'long', day: 'numeric' })} au ${j(lever, { weekday: 'long', day: 'numeric', month: 'short' })}`
+}
+
+// Nuits des 7 derniers jours sans agenda (la nuit de cette nuit seulement à partir de 4 h)
+export function nuitsManquantes() {
+  const notees = new Set(agenda().map((n) => n.date))
+  const res = []
+  for (let k = new Date().getHours() >= 4 ? 0 : 1; k <= 6; k++) {
+    const d = dateLocale(new Date(Date.now() - k * JOUR))
+    if (!notees.has(d)) res.push(d)
+  }
+  return res
+}
+
 // Moyennes sur les nuits notées depuis une date (incluse)
 export function moyennes(nuits) {
   if (!nuits.length) return null

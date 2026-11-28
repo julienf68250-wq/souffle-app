@@ -1,6 +1,10 @@
 {
-  "version": 6,
+  "version": 7,
   "nouveautes": [
+    {
+      "version": 7,
+      "texte": "Nouvelle organisation en 3 onglets : Aujourd'hui (une seule chose utile à la fois), Nuit et Progrès. Fais ton point de départ (2 minutes) pour voir si ça va mieux, et pense à sauvegarder tes données (Aide)."
+    },
     {
       "version": 6,
       "texte": "Histoires lues plus lentement, avec les lecteurs les plus calmes, et deux nouvelles ambiances pour s'endormir : un ruisseau de montagne et une nuit d'été au bord du Pacifique."
