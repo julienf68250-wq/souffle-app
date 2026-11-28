@@ -1,4 +1,4 @@
-// Éléments communs : barre d'onglets, en-tête avec retour, bouton Aide.
+// Éléments communs : barre d’onglets, en-tête avec retour, icône de réglages.
 import { aller, remplacer, retour } from './routeur.js'
 
 const ICONES = {
@@ -50,11 +50,14 @@ export function Entete({ titre, onRetour }) {
   )
 }
 
-// Aide (3114, urgences, réglages), au même endroit sur chaque onglet
-export function BoutonAide() {
+// Réglages (sauvegarde, montre, rappel, thème ; 3114 en bas), au même endroit sur chaque onglet
+export function BoutonReglages() {
   return (
-    <button className="bouton-aide" onClick={() => aller('aide')}>
-      Aide
+    <button className="bouton-reglages" onClick={() => aller('reglages')} aria-label="Réglages">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="3.2" />
+        <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" />
+      </svg>
     </button>
   )
 }

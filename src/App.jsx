@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Aujourdhui from './Aujourdhui.jsx'
 import Nuit from './Nuit.jsx'
 import Progres from './Progres.jsx'
-import Aide from './Aide.jsx'
+import Reglages from './Reglages.jsx'
 import Bilan from './Bilan.jsx'
 import Seance from './Seance.jsx'
 import Vider from './Vider.jsx'
@@ -75,10 +75,11 @@ export default function App() {
       return <Nuit />
     case 'progres':
       return <Progres />
-    case 'aide':
+    case 'reglages':
+    case 'aide': // ancienne adresse
       return (
-        <Page titre="Aide">
-          <Aide section={params.section} />
+        <Page titre="Réglages">
+          <Reglages section={params.section} />
         </Page>
       )
     case 'bilan':

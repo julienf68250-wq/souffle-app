@@ -665,3 +665,8 @@ input[type='time'] {
 .barre-cible { position: absolute; left: 0; right: 0; bottom: 85%; height: 2px; background: var(--ambre); }
 /* Sur l'onglet Aujourd'hui, les astres restent à gauche du bouton Aide */
 .ciel-compact .astres { right: 96px; }
+/* Icône de réglages (remplace le bouton Aide) */
+.bouton-reglages { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--ardoise); }
+.bouton-reglages svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.parler { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.parler .principal.grand { padding: 16px; font-size: 18px; }

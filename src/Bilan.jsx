@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GAD, PHQ, WHO5, enregistrerBilan, suiviWho5 } from './questionnaires.js'
-import { NumerosUrgence } from './Aide.jsx'
+import { NumerosUrgence } from './Reglages.jsx'
 
 // Le point toutes les 2 semaines : WHO-5 (5 questions) + PHQ-4 (4 questions),
 // prolongé par le PHQ-9 ou le GAD-7 complet seulement si un sous-score est ≥ 3.

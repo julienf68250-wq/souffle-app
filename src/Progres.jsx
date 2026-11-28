@@ -1,4 +1,4 @@
-import { BarreOnglets, BoutonAide } from './Interface.jsx'
+import { BarreOnglets, BoutonReglages } from './Interface.jsx'
 import { aller } from './routeur.js'
 import { sessions } from './stockage.js'
 import { agenda, calculer, duree } from './sommeil.js'
@@ -90,7 +90,7 @@ export default function Progres() {
     <div className="onglet">
       <header className="entete-onglet">
         <h1>Progrès</h1>
-        <BoutonAide />
+        <BoutonReglages />
       </header>
       <main className="contenu-onglet progres">
         <section className="carte-section">
@@ -200,18 +200,18 @@ export default function Progres() {
                 )}
               </ul>
               <p className="aide">Ce sont des tendances, pas des notes : une semaine isolée ne veut rien dire.</p>
-              <button className="lien" onClick={() => aller('aide', { section: 'montre' })}>
+              <button className="lien" onClick={() => aller('reglages', { section: 'montre' })}>
                 Importer de nouvelles données
               </button>
             </>
           ) : (
-            <button className="ligne-lien" onClick={() => aller('aide', { section: 'montre' })}>
+            <button className="ligne-lien" onClick={() => aller('reglages', { section: 'montre' })}>
               Relier ma montre Garmin <span aria-hidden="true">›</span>
             </button>
           )}
         </section>
 
-        <button className="ligne-lien" onClick={() => aller('aide', { section: 'sauvegarde' })}>
+        <button className="ligne-lien" onClick={() => aller('reglages', { section: 'sauvegarde' })}>
           {exportJours == null ? 'Sauvegarder mes données' : `Sauvegarde : il y a ${exportJours} jour${exportJours > 1 ? 's' : ''}`} <span aria-hidden="true">›</span>
         </button>
       </main>

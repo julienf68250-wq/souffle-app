@@ -1,4 +1,4 @@
-import { BarreOnglets, BoutonAide } from './Interface.jsx'
+import { BarreOnglets, BoutonReglages } from './Interface.jsx'
 import { aller } from './routeur.js'
 import { aujourdhui, etatProgramme, libelleNuit, nuitsManquantes } from './sommeil.js'
 
@@ -26,7 +26,7 @@ export default function Nuit() {
     <div className="onglet">
       <header className="entete-onglet">
         <h1>Nuit</h1>
-        <BoutonAide />
+        <BoutonReglages />
       </header>
       <main className="contenu-onglet">
         {prog && !tard && (

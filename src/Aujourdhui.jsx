@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Astre, { periode } from './Ciel.jsx'
 import Installer from './Installer.jsx'
-import { BarreOnglets, BoutonAide } from './Interface.jsx'
+import { BarreOnglets, BoutonReglages } from './Interface.jsx'
 import { aller } from './routeur.js'
 import { sessions } from './stockage.js'
 import { agenda, enMinutes, etatProgramme, nuitANoter } from './sommeil.js'
@@ -64,7 +64,7 @@ export default function Aujourdhui() {
         <Astre />
         <div className="barre-haut">
           <p className="nom">Souffle</p>
-          <BoutonAide />
+          <BoutonReglages />
         </div>
         <h1>{SALUTS[p]}</h1>
         <Installer />

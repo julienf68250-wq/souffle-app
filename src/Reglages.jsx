@@ -32,7 +32,7 @@ const ilYa = (t) => {
   return j === 0 ? 'aujourd’hui' : j === 1 ? 'hier' : `il y a ${j} jours`
 }
 
-export default function Aide({ section }) {
+export default function Reglages({ section }) {
   const [theme, setTheme] = useState(lireTheme)
   const [apercu, setApercu] = useState(null)
   const [message, setMessage] = useState('')
@@ -86,26 +86,9 @@ export default function Aide({ section }) {
 
   return (
     <main className="ecran aide-ecran">
-      <h2>Aide</h2>
+      <h2>Réglages</h2>
 
       <section>
-        <p className="aide">Si tu penses au suicide, ou si tu t’inquiètes pour toi : appelle, maintenant. On t’écoute, sans jugement.</p>
-        <NumerosUrgence />
-        <button className="ligne-lien" onClick={() => aller('consulter')}>
-          Quand consulter un médecin <span aria-hidden="true">›</span>
-        </button>
-      </section>
-
-      <section>
-        <h3 className="titre-section">Repères</h3>
-        <ul className="signes">
-          <li>Alcool : 10 verres par semaine au maximum, 2 par jour au plus, et des jours sans (Santé publique France). Il aggrave l’anxiété et le sommeil.</li>
-          <li>Café : son effet dure 5 à 6 heures. Si tu dors mal, rien après 14 h.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h3 className="titre-section">Réglages</h3>
 
         <details className="reglage">
           <summary>Rappel quotidien</summary>
@@ -217,6 +200,14 @@ export default function Aide({ section }) {
 
         <button className="ligne-lien" onClick={basculerTheme}>
           {theme === 'sombre' ? 'Thème clair en journée' : 'Mode sombre tout le temps'} <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <section className="parler">
+        <h3 className="titre-section">Besoin de parler à quelqu’un</h3>
+        <NumerosUrgence />
+        <button className="ligne-lien" onClick={() => aller('consulter')}>
+          Quand consulter un médecin <span aria-hidden="true">›</span>
         </button>
       </section>
 
