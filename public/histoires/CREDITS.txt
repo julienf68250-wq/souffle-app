@@ -1,12 +1,3 @@
-Lectures LibriVox, domaine public (https://librivox.org). Volume harmonisé, réencodées en AAC pour Souffle.
-Alphonse Daudet, « Lettres de mon moulin », lu par Naf :
-https://librivox.org/lettres-de-mon-moulin-by-alphonse-daudet-0901/
-https://archive.org/details/lettres_de_mon_moulin_naf_0901_librivox
-- etoiles.m4a   : « Les Étoiles »
-- phare.m4a     : « Le Phare des Sanguinaires »
-
-
-Les autres histoires sont lues directement depuis l'Internet Archive (LibriVox, domaine public), sans copie ici :
-Jules Michelet « La Mer » (lu par Christiane Jehanne), Georges François Renard « À travers les régions de France »
-(bénévoles LibriVox), George Sand « La Mare au diable » (Ezwa), Chateaubriand « Voyage en Italie » (Christiane Jehanne),
-Marcel Proust « À l'ombre des jeunes filles en fleurs » (Bernard), Alphonse Daudet « Lettres de mon moulin » (Naf).
+Histoires écrites pour Souffle (textes : scripts/histoires/), courtes et sans suspense, pour s'endormir.
+Lues par une voix de synthèse neuronale (Microsoft, fr-FR-VivienneMultilingualNeural), générée avec edge-tts.
+Volume harmonisé (-20 LUFS), une seconde de silence au début, fondu de 4 secondes à la fin.

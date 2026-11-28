@@ -1,6 +1,10 @@
 {
-  "version": 7,
+  "version": 8,
   "nouveautes": [
+    {
+      "version": 8,
+      "texte": "De nouvelles histoires courtes, écrites pour s’endormir et lues par Vivienne. Une nouvelle arrive chaque semaine."
+    },
     {
       "version": 7,
       "texte": "Nouvelle organisation en 3 onglets : Aujourd'hui (une seule chose utile à la fois), Nuit et Progrès. Fais ton point de départ (2 minutes) pour voir si ça va mieux, et pense à sauvegarder tes données (Réglages, en haut à droite)."
@@ -332,5 +336,72 @@
       }
     }
   ],
-  "histoires": []
+  "histoires": [
+    {
+      "id": "lac",
+      "titre": "Le lac au crépuscule",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "Une barque, les roseaux, les étoiles qui se posent sur l’eau.",
+      "fichier": "histoires/conte-lac.m4a",
+      "duree": 162,
+      "gain": 0,
+      "semaine": 0
+    },
+    {
+      "id": "cabane",
+      "titre": "La cabane sous la pluie",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "Un poêle qui ronronne, la pluie sur le toit, une couverture chaude.",
+      "fichier": "histoires/conte-cabane.m4a",
+      "duree": 170,
+      "gain": 0,
+      "semaine": 0
+    },
+    {
+      "id": "train",
+      "titre": "Le train de nuit",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "Une couchette, le balancement des rails, la campagne sous la lune.",
+      "fichier": "histoires/conte-train.m4a",
+      "duree": 168,
+      "gain": 0,
+      "semaine": 0
+    },
+    {
+      "id": "jardin",
+      "titre": "Le jardin d’été",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "Le soir tombe, les grillons chantent, un hamac entre deux pommiers.",
+      "fichier": "histoires/conte-jardin.m4a",
+      "duree": 154,
+      "gain": 0,
+      "semaine": 0
+    },
+    {
+      "id": "neige",
+      "titre": "La forêt sous la neige",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "Les flocons tombent sans bruit sur les sapins et la clairière.",
+      "fichier": "histoires/conte-neige.m4a",
+      "duree": 166,
+      "gain": 0,
+      "semaine": 1
+    },
+    {
+      "id": "phare",
+      "titre": "Le gardien du phare",
+      "auteur": "Souffle",
+      "lecteur": "Vivienne (voix de synthèse)",
+      "resume": "La lanterne tourne, la mer respire contre le rocher.",
+      "fichier": "histoires/conte-phare.m4a",
+      "duree": 169,
+      "gain": 0,
+      "semaine": 2
+    }
+  ]
 }

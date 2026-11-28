@@ -17,12 +17,17 @@ export function lire(cle, defaut) {
   }
 }
 
+// Clés propres à ce téléphone : jamais exportées ni envoyées en ligne (jeton, phrase secrète…)
+export const CLES_LOCALES = ['souffle.sync', 'souffle.sync-etat', 'souffle.dernier-export']
+
 export function ecrire(cle, valeur) {
   try {
     localStorage.setItem(cle, JSON.stringify(valeur))
   } catch {
     /* stockage indisponible : l'app fonctionne quand même, sans historique */
   }
+  // Prévient la sauvegarde en ligne qu'il y a du nouveau
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('souffle-ecriture', { detail: cle }))
 }
 
 // Sessions : { t, type: 'souffle' | 'nuit' | 'reveil', technique?, duree?, avant?, apres?, note? }
@@ -35,7 +40,11 @@ export const majSession = (t, champs) =>
 export const notes = () => lire(CLES.notes, [])
 export const ajouterNote = (texte) =>
   ecrire(CLES.notes, [...notes(), { id: Date.now(), t: Date.now(), texte }])
-export const supprimerNote = (id) => ecrire(CLES.notes, notes().filter((n) => n.id !== id))
+export function supprimerNote(id) {
+  // Trace de suppression : la note ne revient pas depuis la copie en ligne
+  ecrire('souffle.supprimes', [...new Set([...lire('souffle.supprimes', []), id])])
+  ecrire(CLES.notes, notes().filter((n) => n.id !== id))
+}
 
 // Ambiance sonore choisie (id d'un son de contenu.json, ou null = silence). La mer par défaut.
 export function lireSon() {

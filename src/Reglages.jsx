@@ -3,6 +3,7 @@ import { aller } from './routeur.js'
 import { dernierExport, exporter, fusionner, lireSauvegarde, resume } from './donnees.js'
 import { importerMontre } from './montre.js'
 import { ecrireTheme, lireTheme } from './stockage.js'
+import SauvegardeEnLigne from './SauvegardeEnLigne.jsx'
 
 // Numéros d'urgence, réutilisés dans l'écran de sécurité du questionnaire
 export function NumerosUrgence() {
@@ -144,6 +145,8 @@ export default function Reglages({ section }) {
           )}
           {message && <p className="aide" role="status">{message}</p>}
         </details>
+
+        <SauvegardeEnLigne ouvert={section === 'en-ligne'} />
 
         <details className="reglage" open={section === 'montre'}>
           <summary>Montre Garmin</summary>

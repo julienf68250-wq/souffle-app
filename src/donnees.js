@@ -1,6 +1,6 @@
 // Sauvegarde des données : export JSON daté (menu Partager → Fichiers / iCloud Drive),
 // import avec aperçu et fusion sans doublon, demande de stockage persistant.
-import { lire, ecrire } from './stockage.js'
+import { CLES_LOCALES, lire, ecrire } from './stockage.js'
 
 export const SCHEMA = 1
 const PREFIXE = 'souffle.'
@@ -17,11 +17,12 @@ export function demanderStockagePersistant() {
   if (lire(CLE_SCHEMA, null) == null) ecrire(CLE_SCHEMA, SCHEMA)
 }
 
-function toutesLesDonnees() {
+// Tout ce qui se sauvegarde (export et sauvegarde en ligne), sans les clés propres au téléphone
+export function donneesASauvegarder() {
   const donnees = {}
   for (let i = 0; i < localStorage.length; i++) {
     const cle = localStorage.key(i)
-    if (!cle?.startsWith(PREFIXE) || cle === CLE_DERNIER_EXPORT) continue
+    if (!cle?.startsWith(PREFIXE) || CLES_LOCALES.includes(cle)) continue
     donnees[cle] = lire(cle, null)
   }
   return donnees
@@ -41,7 +42,7 @@ export function resume(donnees) {
 export const dernierExport = () => lire(CLE_DERNIER_EXPORT, null)
 
 export async function exporter() {
-  const contenu = { app: 'souffle', schemaVersion: SCHEMA, exporteLe: new Date().toISOString(), donnees: toutesLesDonnees() }
+  const contenu = { app: 'souffle', schemaVersion: SCHEMA, exporteLe: new Date().toISOString(), donnees: donneesASauvegarder() }
   const jour = new Date().toISOString().slice(0, 10)
   const nom = `souffle-sauvegarde-${jour}.json`
   const fichier = new File([JSON.stringify(contenu, null, 1)], nom, { type: 'application/json' })
@@ -85,7 +86,7 @@ const idElement = (x) => (x && typeof x === 'object' ? (x.id ?? x.t ?? x.date ??
 
 export function fusionner(donneesImportees) {
   for (const [cle, valeur] of Object.entries(donneesImportees)) {
-    if (!cle.startsWith(PREFIXE) || cle === CLE_DERNIER_EXPORT) continue
+    if (!cle.startsWith(PREFIXE) || CLES_LOCALES.includes(cle)) continue
     const actuelle = lire(cle, null)
     if (Array.isArray(valeur)) {
       const parId = new Map((Array.isArray(actuelle) ? actuelle : []).map((x) => [idElement(x), x]))
@@ -99,4 +100,6 @@ export function fusionner(donneesImportees) {
       ecrire(cle, valeur) // réglages et programme : on garde ceux du téléphone s'ils existent
     }
   }
+  const supprimes = new Set(lire('souffle.supprimes', []))
+  if (supprimes.size) ecrire('souffle.notes', lire('souffle.notes', []).filter((n) => !supprimes.has(n.id)))
 }

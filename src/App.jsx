@@ -18,6 +18,7 @@ import { aller, remplacer, retour, useRoute } from './routeur.js'
 import { ajouterSession, lireTheme } from './stockage.js'
 import { recommander } from './contenu.js'
 import { demanderStockagePersistant } from './donnees.js'
+import { demarrerSync } from './sync.js'
 
 const estNuit = () => {
   const h = new Date().getHours()
@@ -52,6 +53,7 @@ export default function App() {
 
   useEffect(() => {
     demanderStockagePersistant()
+    demarrerSync()
     const t = setInterval(() => {
       setNuit(estNuit())
       document.documentElement.dataset.ciel = periode()
