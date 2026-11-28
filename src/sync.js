@@ -3,10 +3,13 @@
 // GitHub ne voit que du chiffré. Le téléphone garde une copie de travail (hors connexion).
 import { CLES_LOCALES, ecrire, lire } from './stockage.js'
 import { donneesASauvegarder, fusionner } from './donnees.js'
+import { creerPaire, dechiffrerMontre } from './cleMontre.js'
+import { fusionnerMontre } from './montre.js'
 
 const CLE = 'souffle.sync' // { depot, jeton, phrase } : reste sur le téléphone, jamais envoyé
 const ETAT = 'souffle.sync-etat'
 const FICHIER = 'souffle.json'
+const CLE_MONTRE = 'souffle.cle-montre' // paire ECDH : suit dans la sauvegarde chiffrée
 export const DEPOT_PAR_DEFAUT = 'julienf68250-wq/souffle-donnees'
 
 export const configSync = () => lire(CLE, null)
@@ -58,8 +61,8 @@ function messageErreur(statut) {
   if (statut === 404) return 'Dépôt introuvable : vérifie que le jeton donne accès à souffle-donnees.'
   return `GitHub a répondu ${statut}. Réessaie plus tard.`
 }
-const api = (cfg, methode, corps) =>
-  fetch(`https://api.github.com/repos/${cfg.depot}/contents/${FICHIER}`, {
+const api = (cfg, methode, corps, fichier = FICHIER) =>
+  fetch(`https://api.github.com/repos/${cfg.depot}/contents/${fichier}`, {
     method: methode,
     cache: 'no-store',
     headers: {
@@ -86,9 +89,66 @@ async function lireEnLigne(cfg) {
   return { donnees: clair.donnees, sha: j.sha }
 }
 
+let silence = false // pas de nouvel envoi déclenché par nos propres écritures
+const contenuJson = (j) => JSON.parse(dec.decode(depuisB64(j.content.replace(/\s/g, ''))))
+const sansEnvoi = (f) => {
+  silence = true
+  try {
+    return f()
+  } finally {
+    silence = false
+  }
+}
+
+// Crée la paire de clés de la montre si besoin et dépose la clé publique pour le robot Garmin
+async function assurerCleMontre(cfg) {
+  let paire = lire(CLE_MONTRE, null)
+  if (paire && etatSync().clePubliqueDeposee === paire.publique.x) return
+  if (!paire) {
+    paire = await creerPaire()
+    sansEnvoi(() => ecrire(CLE_MONTRE, paire))
+  }
+  const g = await api(cfg, 'GET', null, 'cle-publique.json')
+  let sha = null
+  if (g.ok) {
+    const j = await g.json()
+    sha = j.sha
+    if (contenuJson(j).x === paire.publique.x) return sansEnvoi(() => majEtat({ clePubliqueDeposee: paire.publique.x }))
+  }
+  const r = await api(
+    cfg,
+    'PUT',
+    { message: 'Souffle : clé publique de l’app', content: versB64(enc.encode(JSON.stringify(paire.publique))), ...(sha ? { sha } : {}) },
+    'cle-publique.json',
+  )
+  if (r.ok) sansEnvoi(() => majEtat({ clePubliqueDeposee: paire.publique.x }))
+}
+
+// Récupère les données déposées par le robot Garmin (toutes les 3 h) et prévient l'app
+async function recupererMontre(cfg) {
+  const paire = lire(CLE_MONTRE, null)
+  if (!paire) return
+  const r = await api(cfg, 'GET', null, 'montre.json')
+  if (!r.ok) return sansEnvoi(() => majEtat({ montre: r.status === 404 ? { attente: true } : etatSync().montre }))
+  const env = contenuJson(await r.json())
+  const avant = etatSync().montre ?? {}
+  let nouvelles = false
+  if (env.donnees && env.verifie !== avant.verifie) {
+    try {
+      const { jours } = await dechiffrerMontre(env, paire.privee)
+      sansEnvoi(() => fusionnerMontre(jours))
+      nouvelles = true
+    } catch {
+      // Chiffré pour une ancienne clé : le prochain passage du robot utilisera la nouvelle
+      return sansEnvoi(() => majEtat({ montre: { ...avant, attente: true } }))
+    }
+  }
+  sansEnvoi(() => majEtat({ montre: { verifie: env.verifie, derniere: env.derniere, erreur: env.erreur ?? null, recu: Date.now() } }))
+  if (nouvelles) window.dispatchEvent(new CustomEvent('souffle-montre', { detail: { derniere: env.derniere, erreur: env.erreur } }))
+}
+
 let enCours = false
 let encore = false
-let silence = false // pas de nouvel envoi déclenché par nos propres écritures
 
 // Récupère, fusionne, puis renvoie tout (chiffré). Renvoie un résumé lisible.
 export async function synchroniser(cfg = configSync()) {
@@ -107,6 +167,12 @@ export async function synchroniser(cfg = configSync()) {
       } finally {
         silence = false
       }
+    }
+    try {
+      await assurerCleMontre(cfg)
+      await recupererMontre(cfg)
+    } catch {
+      /* la montre ne bloque jamais la sauvegarde */
     }
     const env = await chiffrer({ donnees: donneesASauvegarder(), le: new Date().toISOString() }, cfg.phrase)
     const corps = {

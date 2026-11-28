@@ -1,10 +1,11 @@
 import { BarreOnglets, BoutonReglages } from './Interface.jsx'
 import { aller } from './routeur.js'
 import { sessions } from './stockage.js'
-import { agenda, calculer, duree } from './sommeil.js'
+import { agenda, calculer, duree, nuitANoter } from './sommeil.js'
 import { CONTENU, meilleure, statsParTechnique } from './contenu.js'
 import { prochainBilan, suiviWho5 } from './questionnaires.js'
-import { tendancesMontre } from './montre.js'
+import { pistesMarche, signauxMontre } from './montre.js'
+import { CarteMontre } from './MontreEtat.jsx'
 import { dernierExport } from './donnees.js'
 
 const JOUR = 86400000
@@ -80,8 +81,6 @@ export default function Progres() {
     nuits: nuits.filter((n) => n.t > mois).length,
     ecoutes: sessions().filter((s) => s.type === 'ecoute' && s.t > mois).length,
   }
-  const montre = tendancesMontre()
-  const joursDepuisMontre = montre ? Math.floor((Date.now() - new Date(montre.derniereDate + 'T12:00').getTime()) / JOUR) : 0
   const st = statsParTechnique()
   const best = meilleure()
   const parTechnique = CONTENU.techniques.filter((t) => st[t.id]?.notees)
@@ -178,45 +177,7 @@ export default function Progres() {
 
         <section className="carte-section">
           <h2 className="titre-section">Montre</h2>
-          {montre ? (
-            <>
-              <ul className="signes">
-                {montre.vfc.semaine != null && (
-                  <li>
-                    Variabilité cardiaque de nuit : {Math.round(montre.vfc.semaine)} ms en moyenne cette semaine
-                    {montre.vfc.habitude != null ? `, ${Math.round(montre.vfc.habitude)} d’habitude.` : '.'}
-                  </li>
-                )}
-                {montre.fcRepos.semaine != null && (
-                  <li>
-                    Pouls au repos : {Math.round(montre.fcRepos.semaine)} battements par minute
-                    {montre.fcRepos.habitude != null ? `, ${Math.round(montre.fcRepos.habitude)} d’habitude.` : '.'}
-                  </li>
-                )}
-                {montre.pas.semaine != null && (
-                  <li>
-                    Pas : {Math.round(montre.pas.semaine).toLocaleString('fr-FR')} par jour
-                    {montre.pas.habitude != null ? `, ${Math.round(montre.pas.habitude).toLocaleString('fr-FR')} d’habitude.` : '.'} Viser 7 000 aide le moral.
-                  </li>
-                )}
-              </ul>
-              {joursDepuisMontre > 3 ? (
-                <p className="aide">
-                  Dernières données de la montre : {new Date(montre.derniereDate + 'T12:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}. Ouvre
-                  l’app Garmin Connect pour synchroniser ta montre, puis relance le raccourci.
-                </p>
-              ) : (
-                <p className="aide">Ce sont des tendances, pas des notes : une semaine isolée ne veut rien dire.</p>
-              )}
-              <button className="lien" onClick={() => aller('reglages', { section: 'montre' })}>
-                Importer de nouvelles données
-              </button>
-            </>
-          ) : (
-            <button className="ligne-lien" onClick={() => aller('reglages', { section: 'montre' })}>
-              Relier ma montre Garmin <span aria-hidden="true">›</span>
-            </button>
-          )}
+          <CarteMontre signaux={signauxMontre()} pistes={pistesMarche(agenda())} nuitPasNotee={nuitANoter()} />
         </section>
 
         <button className="ligne-lien" onClick={() => aller('reglages', { section: 'sauvegarde' })}>

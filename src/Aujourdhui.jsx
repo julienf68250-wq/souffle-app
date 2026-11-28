@@ -7,6 +7,7 @@ import { sessions } from './stockage.js'
 import { agenda, enMinutes, etatProgramme, nuitANoter } from './sommeil.js'
 import { marquerNouveautesVues, nouveautesAAfficher } from './contenu.js'
 import { prochainBilan } from './questionnaires.js'
+import { signauxMontre } from './montre.js'
 
 const SALUTS = {
   aube: 'Bonjour. On démarre en douceur ?',
@@ -56,6 +57,9 @@ export default function Aujourdhui() {
   const p = periode()
   const debutSemaine = Date.now() - 7 * JOUR
   const nbSeances = sessions().filter((s) => s.type === 'souffle' && s.t > debutSemaine).length
+  // Geste du jour (docs/etude/07 et 09) : marcher, si la semaine manque de pas. Jamais un chiffre ici.
+  const marche = signauxMontre()?.marche
+  const geste = marche && marche.jours < 5 && new Date().getHours() < 17 && (moment(prog) === 'matin' || moment(prog) === 'jour')
   const nbNuits = agenda().filter((n) => new Date(n.date + 'T12:00').getTime() > debutSemaine).length
 
   return (
@@ -97,6 +101,12 @@ export default function Aujourdhui() {
             Vider ma tête
           </button>
         </div>
+
+        {geste && (
+          <p className="geste-du-jour">
+            <b>Geste du jour</b> : 20 minutes de marche dehors, avant 17 h. C’est bon pour le moral, et pour les jambes le soir.
+          </p>
+        )}
 
         {annonces.length > 0 && p !== 'nuit' && (
           <div className="annonce" role="status">

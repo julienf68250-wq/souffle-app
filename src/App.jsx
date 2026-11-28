@@ -11,6 +11,7 @@ import Reveil from './Reveil.jsx'
 import Agenda from './Agenda.jsx'
 import Programme from './Programme.jsx'
 import Consulter from './Consulter.jsx'
+import Jambes from './Jambes.jsx'
 import Endormir from './Endormir.jsx'
 import { Entete } from './Interface.jsx'
 import { periode } from './Ciel.jsx'
@@ -96,6 +97,12 @@ export default function App() {
       return (
         <Page titre="Vider ma tête">
           <Vider onFin={fin} />
+        </Page>
+      )
+    case 'jambes':
+      return (
+        <Page titre="Jambes sans repos">
+          <Jambes onFin={fin} />
         </Page>
       )
     case 'consulter':

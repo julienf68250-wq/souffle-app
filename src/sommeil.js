@@ -22,7 +22,7 @@ export const duree = (min) => {
   const m = Math.round(min % 60)
   return m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`
 }
-const dateLocale = (d = new Date()) =>
+export const dateLocale = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 export const aujourdhui = () => dateLocale()
 // Nombre de jours de calendrier entre deux dates AAAA-MM-JJ
@@ -33,7 +33,8 @@ const jourNum = (iso) => {
 export const joursDepuis = (iso) => jourNum(aujourdhui()) - jourNum(iso)
 
 // ---------- Agenda ----------
-// Une nuit : { date (jour du lever), coucher, latence (min), eveil (min), reveil, lever, qualite (0-10) }
+// Une nuit : { date (jour du lever), coucher, latence (min), eveil (min), reveil, lever, qualite (0-10),
+//   jambes (0-10, facultatif), jambesReveil (les jambes ont empêché de dormir, facultatif) }
 export const agenda = () => lire(CLE_AGENDA, [])
 
 export function enregistrerNuit(nuit) {
@@ -147,7 +148,19 @@ export const changerLever = (lever) => {
 }
 
 const arrondi15 = (m) => Math.round(m / 15) * 15
-const borner = (m) => Math.min(FENETRE_MAX, Math.max(FENETRE_MIN, m))
+const borner = (m, min = FENETRE_MIN) => Math.min(FENETRE_MAX, Math.max(min, m))
+
+// ---------- Jambes sans repos (docs/etude/07) ----------
+// Le manque de sommeil aggrave le syndrome : plancher à 6 h au lieu de 5 h,
+// et pas de réduction de la fenêtre pendant une mauvaise passe des jambes.
+export const FENETRE_MIN_JAMBES = 360
+export function jambesSuivies(p = programme()) {
+  return !!p?.reponses?.jambes || depuis(ilYa(13)).some((n) => n.jambes != null && n.jambes >= 1)
+}
+export function passeJambes() {
+  const sem = septDerniersJours().filter((n) => n.jambes != null)
+  return sem.filter((n) => n.jambes >= 5).length > 2
+}
 
 // Met à jour la fenêtre au lit si c'est le moment, puis renvoie l'état du programme.
 export function etatProgramme() {
@@ -160,7 +173,8 @@ export function etatProgramme() {
       // Démarrage : au moins 5 nuits notées sur 7 jours
       const base = moyennes(depuis(p.debut))
       if (joursEcoules >= 7 && base && base.n >= 5) {
-        p.fenetre = base.eff >= 0.85 ? borner(arrondi15(base.tal)) : borner(arrondi15(base.tst))
+        const plancher = jambesSuivies(p) ? FENETRE_MIN_JAMBES : FENETRE_MIN
+        p.fenetre = base.eff >= 0.85 ? borner(arrondi15(base.tal), plancher) : borner(arrondi15(base.tst), plancher)
         p.ajuste = aujourdhui()
         p.dernierChangement = { date: aujourdhui(), type: 'debut', fenetre: p.fenetre, eff: base.eff }
         sauver(p)
@@ -169,9 +183,11 @@ export function etatProgramme() {
       // Ajustement hebdomadaire selon l'efficacité de la semaine écoulée
       const semaine = moyennes(depuis(p.ajuste).filter((n) => n.date > p.ajuste))
       if (joursDepuis(p.ajuste) >= 7 && semaine && semaine.n >= 5) {
-        const pas = semaine.eff >= 0.85 ? 15 : semaine.eff >= 0.8 ? 0 : -15
+        const jambes = jambesSuivies(p)
+        let pas = semaine.eff >= 0.85 ? 15 : semaine.eff >= 0.8 ? 0 : -15
+        if (jambes && passeJambes()) pas = Math.max(0, pas) // mauvaise passe des jambes : on garde la fenêtre
         const avant = p.fenetre
-        p.fenetre = borner(p.fenetre + pas)
+        p.fenetre = borner(p.fenetre + pas, jambes ? FENETRE_MIN_JAMBES : FENETRE_MIN)
         p.ajuste = aujourdhui()
         p.dernierChangement = { date: aujourdhui(), type: 'semaine', de: avant, fenetre: p.fenetre, eff: semaine.eff }
         sauver(p)
@@ -186,5 +202,6 @@ export function etatProgramme() {
     observation: p.compression && p.fenetre == null,
     coucher,
     gardeFous: evaluerGardeFous(p.reponses),
+    jambes: jambesSuivies(p),
   }
 }

@@ -72,6 +72,9 @@ export default function Nuit() {
           {prog ? `Programme sommeil, semaine ${prog.semaine}` : 'Démarrer le programme sommeil'}
           <span aria-hidden="true">›</span>
         </button>
+        <button className="ligne-lien" onClick={() => aller('jambes')}>
+          Jambes sans repos : ce qui marche <span aria-hidden="true">›</span>
+        </button>
       </main>
       <BarreOnglets actif="nuit" />
     </div>

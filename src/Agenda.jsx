@@ -21,6 +21,8 @@ export default function Agenda({ onFin, date = aujourdhui() }) {
     reveil: prec?.reveil ?? p?.lever ?? '06:30',
     lever: prec?.lever ?? p?.lever ?? '06:45',
     qualite: existante?.qualite ?? null,
+    jambes: existante?.jambes ?? null,
+    jambesReveil: existante?.jambesReveil ?? false,
   })
   const maj = (champ) => (v) => setN((x) => ({ ...x, [champ]: v }))
   const c = calculer(n)
@@ -66,6 +68,24 @@ export default function Agenda({ onFin, date = aujourdhui() }) {
       <div className="champ-qualite">
         <p className="legende">Qualité de la nuit</p>
         <Echelle valeur={n.qualite} onChoix={maj('qualite')} gauche="horrible" droite="parfaite" />
+      </div>
+
+      <div className="champ-qualite">
+        <p className="legende">Jambes, hier soir et cette nuit (facultatif)</p>
+        <Echelle valeur={n.jambes} onChoix={maj('jambes')} gauche="calmes" droite="insupportables" />
+        {n.jambes > 0 && (
+          <fieldset className="puces">
+            <legend>Elles t’ont empêché de dormir ?</legend>
+            {[
+              [false, 'Non'],
+              [true, 'Oui'],
+            ].map(([v, t]) => (
+              <button key={t} className={n.jambesReveil === v ? 'actif' : ''} aria-pressed={n.jambesReveil === v} onClick={() => maj('jambesReveil')(v)}>
+                {t}
+              </button>
+            ))}
+          </fieldset>
+        )}
       </div>
 
       <p className="resume">

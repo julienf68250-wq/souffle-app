@@ -23,6 +23,30 @@ export default function Reveil({ technique, onFin, versVider }) {
       </main>
     )
 
+  if (etape === 'jambes')
+    return (
+      <main className="ecran sombre-fin">
+        <h2>Les jambes : bouge, c’est ce qui soulage.</h2>
+        <ol className="regles">
+          <li>Lève-toi et marche 5 minutes, dans une autre pièce, lumière faible.</li>
+          <li>
+            Étire les mollets : face au mur, une jambe tendue derrière, talon au sol, 30 secondes de chaque côté, deux fois.
+          </li>
+          <li>Puis assis, occupe ton esprit : mots croisés, un livre, un puzzle. Une tête occupée sent moins les jambes.</li>
+          <li>Retour au lit quand les jambes se calment et que les paupières sont lourdes.</li>
+        </ol>
+        <p className="aide">
+          Pas de respiration ni d’histoire allongé pendant une crise : rester couché l’entretient. Si ça revient plusieurs nuits par semaine, parles-en à ton
+          médecin (bilan du fer).
+        </p>
+        <div className="pied">
+          <button className="lien" onClick={onFin}>
+            Fermer
+          </button>
+        </div>
+      </main>
+    )
+
   return (
     <main className="ecran sombre-fin">
       <h2>Lève-toi, doucement.</h2>
@@ -41,6 +65,9 @@ export default function Reveil({ technique, onFin, versVider }) {
         }}
       >
         Respirer lentement, assis hors du lit
+      </button>
+      <button className="secondaire" onClick={() => setEtape('jambes')}>
+        C’est les jambes qui m’empêchent
       </button>
       <div className="pied">
         <button className="lien" onClick={versVider}>

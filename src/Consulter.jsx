@@ -6,7 +6,7 @@ export default function Consulter({ onFin }) {
       <p className="aide">Parles-en à ton médecin traitant si l'un de ces signes te concerne. Il peut aussi t'orienter vers une TCC-I avec un thérapeute, plus efficace qu'une app.</p>
       <ul className="signes">
         <li>Ronflement fort, pauses de respiration la nuit, réveils en suffoquant.</li>
-        <li>Envie irrépressible de bouger les jambes le soir, ou jambes qui sursautent la nuit.</li>
+        <li>Envie irrépressible de bouger les jambes le soir, ou jambes qui sursautent la nuit : demande un dosage de la ferritine et du CST.</li>
         <li>Endormissements involontaires dans la journée, surtout au volant.</li>
         <li>Humeur très basse, perte d'intérêt, ou anxiété forte depuis plusieurs semaines.</li>
         <li>Comportements anormaux pendant le sommeil.</li>

@@ -218,7 +218,7 @@ let ecoute = null
 export const RYTHME_HISTOIRE = 1 // vitesse normale : la lecture ralentie ne plaisait pas à JF
 
 // Histoire : lue jusqu'au bout (le lecteur permet pause, avance, retour), fondu à la fin.
-// Son seul : minuterie, baisse douce sur les 2 dernières minutes. Jamais les deux ensemble.
+// Son seul : minuterie, baisse douce sur les 5 dernières minutes (docs/etude/08). Jamais les deux ensemble.
 // Renvoie l'élément audio de l'histoire (pour le lecteur), sinon null.
 export function demarrerEcoute({ son, histoire, minutes, onFin }) {
   if (!ctx) return null
@@ -273,7 +273,7 @@ export function demarrerEcoute({ son, histoire, minutes, onFin }) {
   }
 
   const fin = t + minutes * 60
-  sortie.gain.setValueAtTime(1, Math.max(t, fin - 120))
+  sortie.gain.setValueAtTime(1, Math.max(t, fin - 300))
   sortie.gain.linearRampToValueAtTime(0.0001, fin)
   if (son) demarrerAmbiance(son, { volume: son.nuit.volume, coupure: son.nuit.coupure })
   const minuterie = setTimeout(() => {

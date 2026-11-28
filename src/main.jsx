@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '@fontsource-variable/newsreader'
 import '@fontsource-variable/hanken-grotesk'
 import App from './App.jsx'
+import { BandeauMontre } from './MontreEtat.jsx'
 import BandeauMaj from './BandeauMaj.jsx'
 import { periode } from './Ciel.jsx'
 import { urlsSons } from './audio.js'
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
     <BandeauMaj />
+    <BandeauMontre />
   </StrictMode>,
 )
 

@@ -1,6 +1,10 @@
 {
-  "version": 8,
+  "version": 9,
   "nouveautes": [
+    {
+      "version": 9,
+      "texte": "Ta montre se synchronise toute seule (une fois la sauvegarde en ligne activée), et Progrès te montre marche, effort et pouls au repos. Nouveau aussi : une page Jambes sans repos (onglet Nuit) et une question « jambes » dans l’agenda."
+    },
     {
       "version": 8,
       "texte": "De nouvelles histoires courtes, écrites pour s’endormir et lues par Vivienne. Une nouvelle arrive chaque semaine."
