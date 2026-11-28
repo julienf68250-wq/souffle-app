@@ -214,8 +214,8 @@ export function arreterAmbiance(fondu = 1.5) {
 // Histoire (élément audio, lu en flux) et/ou ambiance, puis baisse douce sur les 2 dernières
 // minutes, programmée dans le moteur audio lui-même.
 let ecoute = null
-// Les histoires sont lues 12 % plus lentement (voix du soir)
-export const RYTHME_HISTOIRE = 0.88
+// Vitesse de lecture des histoires
+export const RYTHME_HISTOIRE = 1 // vitesse normale : la lecture ralentie ne plaisait pas à JF
 
 // Histoire : lue jusqu'au bout (le lecteur permet pause, avance, retour), fondu à la fin.
 // Son seul : minuterie, baisse douce sur les 2 dernières minutes. Jamais les deux ensemble.

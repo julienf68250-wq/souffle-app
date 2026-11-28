@@ -17,7 +17,7 @@ export default function Nuit() {
 
   const actions = [
     { cle: 'preparer', titre: 'Préparer la nuit', texte: 'La liste de demain, 2 minutes de souffle lent, puis au lit si le sommeil est là.', aller: 'nuit/preparer' },
-    { cle: 'ecouter', titre: 'Écouter pour s’endormir', texte: 'Une histoire lue lentement, ou un son, qui s’arrête tout seul.', aller: 'nuit/ecouter' },
+    { cle: 'ecouter', titre: 'Écouter pour s’endormir', texte: 'Mer, pluie, ruisseau ou nuit d’été, qui s’arrête tout seul.', aller: 'nuit/ecouter' },
     { cle: 'reveil', titre: 'Je ne dors pas', texte: 'Ce que recommandent les études, sans regarder l’heure.', aller: 'nuit/reveil' },
   ]
   if (tard) actions.sort((a, b) => ['reveil', 'ecouter', 'preparer'].indexOf(a.cle) - ['reveil', 'ecouter', 'preparer'].indexOf(b.cle))

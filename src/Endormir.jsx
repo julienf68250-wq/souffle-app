@@ -15,8 +15,8 @@ const mmss = (s) => {
 // Écouter pour s'endormir : une histoire calme (distraction par l'imagerie, Harvey & Payne 2002)
 // OU un son seul (jamais les deux, choix de JF). Une histoire différente proposée chaque soir.
 export default function Endormir({ onFin }) {
-  const [mode, setMode] = useState('histoire')
   const [histoire, setHistoire] = useState(histoireDuSoir)
+  const [mode, setMode] = useState(() => (histoireDuSoir() ? 'histoire' : 'son')) // sans histoire : les sons directement
   const [autres, setAutres] = useState(false)
   const [sonId, setSonId] = useState('mer')
   const [minutes, setMinutes] = useState(30)
@@ -80,29 +80,26 @@ export default function Endormir({ onFin }) {
   return (
     <main className="ecran">
       <h2>Écouter pour t'endormir</h2>
-      <p className="aide">
-        Suivre des images calmes occupe l'esprit et éloigne les pensées qui tournent : chez des personnes insomniaques, ça a raccourci l'endormissement (une
-        étude, 41 personnes).
-      </p>
-
-      <fieldset className="choix-liste">
-        <legend>Ce soir</legend>
-        {histoire && (
+      {histoire ? (
+        <fieldset className="choix-liste">
+          <legend>Ce soir</legend>
           <button className={mode === 'histoire' ? 'actif' : ''} aria-pressed={mode === 'histoire'} onClick={() => setMode('histoire')}>
             <strong>
               {histoire.titre}
               {estNouvelle(histoire) && <em className="nouvelle">nouvelle</em>}
             </strong>
             <span>
-              {histoire.resume} {minutesEcoute(histoire)} min, {histoire.auteur}, lu par {histoire.lecteur}.
+              {histoire.resume} {minutesEcoute(histoire)} min.
             </span>
           </button>
-        )}
-        <button className={mode === 'son' ? 'actif' : ''} aria-pressed={mode === 'son'} onClick={() => setMode('son')}>
-          <strong>Un son, sans voix</strong>
-          <span>Mer, pluie, bruit brun ou rose, avec arrêt automatique.</span>
-        </button>
-      </fieldset>
+          <button className={mode === 'son' ? 'actif' : ''} aria-pressed={mode === 'son'} onClick={() => setMode('son')}>
+            <strong>Un son, sans voix</strong>
+            <span>Mer, pluie, ruisseau, nuit d’été ou bruit, avec arrêt automatique.</span>
+          </button>
+        </fieldset>
+      ) : (
+        <p className="aide">Un son qui baisse doucement, puis s’arrête tout seul.</p>
+      )}
 
       {mode === 'histoire' && liste.length > 0 && (
         <div className="autres-histoires">
@@ -162,7 +159,7 @@ export default function Endormir({ onFin }) {
 
       <button className="principal grand" onClick={lancer} disabled={mode === 'histoire' && !histoire}>
         {mode === 'histoire' ? histoire?.titre : sonParId(sonId)?.nom}
-        <small>{mode === 'histoire' ? `${histoire ? minutesEcoute(histoire) : 0} min, voix ralentie, fondu à la fin` : `arrêt en douceur dans ${minutes} min`}</small>
+        <small>{mode === 'histoire' ? `${histoire ? minutesEcoute(histoire) : 0} min, fondu à la fin` : `arrêt en douceur dans ${minutes} min`}</small>
       </button>
       <p className="aide">
         L'écran reste allumé en noir pendant l'écoute : sur iPhone, une web app se tait quand l'écran se verrouille.
