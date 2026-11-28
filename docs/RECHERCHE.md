@@ -97,3 +97,4 @@ D'après l'AASM 2021 et l'ESRS 2023.
 - Espie CA et al. BMJ Open 2014;4:e004183
 - Harvey AG, Payne S. Behav Res Ther 2002;40(3):267-277. doi:10.1016/S0005-7967(01)00012-2
 - Gardiner C et al. Sleep Med Rev 2023;69:101764 (caféine : dernier café ≥ 8,8 h avant le coucher)
+- Morck TA et al. Am J Clin Nutr 1983;37(3):416-420 (café au repas : absorption du fer réduite)

@@ -78,7 +78,7 @@ export default function Jambes({ onFin }) {
           La phrase à dire : « J’ai des jambes sans repos ; les recommandations demandent une ferritine au-dessus de 75 et un CST au-dessus de 20 %. »
         </li>
       </ul>
-      <p className="aide">Ne prends ni fer ni magnésium sans ce dosage : le fer en trop est toxique.</p>
+      <p className="aide">Ne prends ni fer ni magnésium sans ce dosage : le fer en trop est toxique. Le café et le thé bloquent une partie du fer des repas : bois-les au moins 1 heure avant ou 2 heures après, surtout si le médecin te prescrit du fer.</p>
 
       <details className="reglage" open={!!fer}>
         <summary>{fer ? `Mon résultat du ${new Date(fer.date + 'T12:00').toLocaleDateString('fr-FR')}` : 'J’ai mon résultat'}</summary>
