@@ -81,6 +81,7 @@ export default function Progres() {
     ecoutes: sessions().filter((s) => s.type === 'ecoute' && s.t > mois).length,
   }
   const montre = tendancesMontre()
+  const joursDepuisMontre = montre ? Math.floor((Date.now() - new Date(montre.derniereDate + 'T12:00').getTime()) / JOUR) : 0
   const st = statsParTechnique()
   const best = meilleure()
   const parTechnique = CONTENU.techniques.filter((t) => st[t.id]?.notees)
@@ -199,7 +200,14 @@ export default function Progres() {
                   </li>
                 )}
               </ul>
-              <p className="aide">Ce sont des tendances, pas des notes : une semaine isolée ne veut rien dire.</p>
+              {joursDepuisMontre > 3 ? (
+                <p className="aide">
+                  Dernières données de la montre : {new Date(montre.derniereDate + 'T12:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}. Ouvre
+                  l’app Garmin Connect pour synchroniser ta montre, puis relance le raccourci.
+                </p>
+              ) : (
+                <p className="aide">Ce sont des tendances, pas des notes : une semaine isolée ne veut rien dire.</p>
+              )}
               <button className="lien" onClick={() => aller('reglages', { section: 'montre' })}>
                 Importer de nouvelles données
               </button>

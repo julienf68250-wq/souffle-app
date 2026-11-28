@@ -148,7 +148,7 @@ export default function Reglages({ section }) {
         <details className="reglage" open={section === 'montre'}>
           <summary>Montre Garmin</summary>
           <p className="aide">
-            Souffle garde trois chiffres seulement : la variabilité cardiaque (VFC) de la nuit, le pouls au repos et les pas. Le score de stress, la Body Battery
+            Souffle garde deux chiffres : le pouls au repos et les pas (et la variabilité cardiaque de nuit si ta montre la fournit). Le score de stress, la Body Battery
             et le sommeil Garmin ne sont pas fiables : ils ne sont pas importés. Ta clé reste dans le Raccourci, jamais dans l’app.
           </p>
           <ol className="regles">
@@ -157,33 +157,28 @@ export default function Reglages({ section }) {
               s’affiche qu’une fois.
             </li>
             <li>
-              Dans <b>Raccourcis</b>, crée « Souffle Garmin ». Action <b>Texte</b> : colle ta clé.
+              Dans <b>Raccourcis</b>, crée le raccourci « Souffle Garmin ». Première action : <b>Texte</b>, et colle ta clé dedans.
             </li>
             <li>
-              <b>Obtenir le contenu de l’URL</b> : <code>https://personal.connectapi.garmin.com/personalapitoken-service/personal-api/personal-api-key/token</code>,
-              méthode <b>POST</b>, en-tête <code>Authorization</code> = « ApiKey » + espace + le Texte.
+              Ajoute <b>Obtenir le contenu de l’URL</b>. Remplace l’adresse par{' '}
+              <code>https://personal.connectapi.garmin.com/personalapitoken-service/personal-api/personal-api-key/token</code>. Touche la flèche › : méthode{' '}
+              <b>POST</b> ; <b>Ajouter un nouvel en-tête</b> : clé <code>Authorization</code>, texte « ApiKey », un espace, puis la bulle <b>Texte</b>. Le résultat
+              de cette action est ton jeton.
             </li>
             <li>
-              <b>Obtenir la valeur du dictionnaire</b> pour la clé <code>access_token</code> : c’est le jeton.
+              Ajoute <b>Date actuelle</b>, puis <b>Ajuster la date</b> : soustraire 35 jours, puis <b>Formater la date</b> : format personnalisé{' '}
+              <code>yyyy-MM-dd</code>. Renomme le résultat « Début ». Ajoute encore <b>Date actuelle</b> puis <b>Formater la date</b> (même format) : c’est « Fin ».
             </li>
             <li>
-              <b>Date actuelle</b>, <b>Ajuster la date</b> (moins 35 jours), <b>Formater la date</b> au format personnalisé <code>yyyy-MM-dd</code> : c’est le
-              début. Même chose sans ajustement : c’est la fin.
+              Ajoute <b>Obtenir le contenu de l’URL</b> :{' '}
+              <code>https://personal.connectapi.garmin.com/usersummary-service/v2/dailysummaries?startDate=Début&amp;endDate=Fin</code> (insère les bulles Début et
+              Fin à leur place). En-tête : clé <code>Authorization</code>, texte « Bearer », un espace, puis la bulle du jeton (résultat de l’étape 3).
             </li>
             <li>
-              Trois <b>Obtenir le contenu de l’URL</b> (méthode GET, en-tête <code>Authorization</code> = « Bearer » + espace + le jeton) :
-              <br />
-              <code>https://personal.connectapi.garmin.com/hrv-service/hrv/daily/DÉBUT/FIN</code>
-              <br />
-              <code>https://personal.connectapi.garmin.com/usersummary-service/v2/dailysummaries?startDate=DÉBUT&amp;endDate=FIN</code>
-              <br />
-              <code>https://personal.connectapi.garmin.com/usersummary-service/stats/steps/daily/DÉBUT/FIN</code>
+              Ajoute <b>Copier dans le presse-papiers</b>. Lance le raccourci, puis reviens ici et touche « Importer ».
             </li>
-            <li>
-              <b>Dictionnaire</b> avec les trois résultats (vfc, resume, pas), puis <b>Copier dans le presse-papiers</b>.
-            </li>
-            <li>Lance le raccourci, reviens dans Souffle et touche « Importer ».</li>
           </ol>
+          <p className="aide">Si les chiffres s’arrêtent à une vieille date : ouvre l’app Garmin Connect pour synchroniser ta montre, puis relance le raccourci.</p>
           <button className="principal" onClick={importerPressePapiers}>
             Importer depuis le presse-papiers
           </button>

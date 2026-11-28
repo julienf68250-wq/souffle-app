@@ -1,5 +1,5 @@
 // Données de la montre Garmin, importées par un Raccourci iOS qui interroge l'API Personal
-// de Garmin et copie le résultat dans le presse-papiers (la clé reste dans le Raccourci).
+// de Garmin (résumé quotidien v2) et copie le résultat dans le presse-papiers (la clé reste dans le Raccourci).
 // Seules la VFC de nuit, la fréquence cardiaque au repos et les pas sont gardés
 // (stress, Body Battery et sommeil Garmin écartés : non validés, voir docs/etude/04).
 import { ecrire, lire } from './stockage.js'
@@ -21,9 +21,10 @@ function extraire(noeud, acc) {
     const e = (acc[d] ??= {})
     const vfc = noeud.lastNightAvg ?? noeud.hrvSummary?.lastNightAvg
     if (typeof vfc === 'number' && vfc > 0) e.vfc = vfc
-    const pas = noeud.totalSteps ?? noeud.steps
+    // Résumé quotidien v2 : movement.steps.value et heartRate.restingValue (vérifié sur les vraies données)
+    const pas = noeud.totalSteps ?? noeud.movement?.steps?.value ?? (typeof noeud.steps === 'number' ? noeud.steps : undefined)
     if (typeof pas === 'number' && pas >= 0 && !('lastNightAvg' in noeud)) e.pas = pas
-    const fc = noeud.restingHeartRate ?? noeud.restingHeartRateValue
+    const fc = noeud.restingHeartRate ?? noeud.heartRate?.restingValue ?? noeud.restingHeartRateValue
     if (typeof fc === 'number' && fc > 20) e.fcRepos = fc
   }
   for (const v of Object.values(noeud)) if (v && typeof v === 'object') extraire(v, acc)
