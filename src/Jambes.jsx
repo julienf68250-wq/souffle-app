@@ -17,6 +17,12 @@ function lireFer(f) {
       texte:
         'Sous les seuils des recommandations (ferritine 75 ou moins, ou saturation sous 20 %) : du fer est indiqué. Demande à ton médecin lequel, en comprimé ou en perfusion. Ne choisis pas seul.',
     }
+  if (f.ferritine > 300)
+    return {
+      ton: 'alerte',
+      texte:
+        'Ferritine au-dessus de la normale : le fer n’est pas la piste pour les jambes, et surtout pas de fer en plus. Une ferritine haute avec une saturation normale vient le plus souvent d’une inflammation, du foie ou du métabolisme : vérifie avec ton médecin que c’est suivi.',
+    }
   if (f.ferritine <= 100)
     return { ton: 'aide', texte: 'Zone intermédiaire (75 à 100) : une perfusion de fer peut se discuter avec le médecin. Le comprimé est moins utile ici.' }
   return { ton: 'aide', texte: 'Au-dessus des seuils : le fer n’est pas la piste pour toi. Les autres leviers de cette page restent valables.' }
