@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { ecrire, lire } from './stockage.js'
-import { agenda } from './sommeil.js'
+import { agenda, enHeure, enMinutes } from './sommeil.js'
 
 // Jambes sans repos (maladie de Willis-Ekbom) : ce qui a des preuves, classé (docs/etude/07).
 // Le premier levier est hors de l'app : le bilan du fer, puis le médecin (AASM 2024-2025).
 const CLE_FER = 'souffle.fer'
 const JOUR = 86400000
+const heureFr = (h) => h.replace(':00', ' h').replace(':', ' h ')
 
 function lireFer(f) {
   if (!f) return null
@@ -21,6 +22,19 @@ function lireFer(f) {
   return { ton: 'aide', texte: 'Au-dessus des seuils : le fer n’est pas la piste pour toi. Les autres leviers de cette page restent valables.' }
 }
 
+// Heure de coucher médiane des 14 dernières nuits notées (les couchers après minuit comptent comme tardifs)
+function coucherMedian() {
+  const m = agenda()
+    .slice(-14)
+    .filter((n) => n.coucher)
+    .map((n) => {
+      const x = enMinutes(n.coucher)
+      return x < 720 ? x + 1440 : x
+    })
+    .sort((a, b) => a - b)
+  return m.length >= 3 ? enHeure(m[Math.floor(m.length / 2)]) : null
+}
+
 export default function Jambes({ onFin }) {
   const [fer, setFer] = useState(() => lire(CLE_FER, null))
   const [saisie, setSaisie] = useState({ ferritine: '', cst: '' })
@@ -28,6 +42,8 @@ export default function Jambes({ onFin }) {
   const genantes = sem.filter((n) => n.jambes >= 5).length
   const lecture = lireFer(fer)
   const rappel = fer && lecture?.ton === 'alerte' && Date.now() - new Date(fer.date + 'T12:00').getTime() > 80 * JOUR
+  const coucherHabituel = coucherMedian()
+  const limiteCafe = coucherHabituel ? enHeure(Math.floor((enMinutes(coucherHabituel) - 540) / 30) * 30) : null
 
   const enregistrer = () => {
     const ferritine = Number(saisie.ferritine.replace(',', '.'))
@@ -103,8 +119,9 @@ export default function Jambes({ onFin }) {
           <b>Pendant une crise</b> : se lever, marcher, étirer les mollets, occuper son esprit. Rester allongé à lutter l’entretient.
         </li>
         <li>
-          <b>Un essai de 3 semaines</b> sans café après midi ni alcool le soir, en notant tes jambes chaque matin : tu verras si ça change quelque chose chez
-          toi.
+          <b>Café</b> : le dernier au moins 9 heures avant le coucher (méta-analyse 2023 sur le sommeil)
+          {limiteCafe ? `, donc avant ${heureFr(limiteCafe)} pour toi (coucher habituel ${heureFr(coucherHabituel)}).` : '.'} Pour les
+          jambes, le lien avec la caféine est faible : si tu respectes déjà cette heure, ce n’est pas ta piste.
         </li>
         <li>
           <b>Étirements doux le soir</b> (mollets, cuisses) : preuve faible, mais sans risque.
