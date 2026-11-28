@@ -701,3 +701,12 @@ input[type='time'] {
 }
 
 .geste-du-jour { margin: 0; padding: 12px 14px; border-left: 3px solid var(--eau); border-radius: 6px; font-size: 15px; line-height: 1.45; }
+
+/* Liaison PC → iPhone par QR code */
+.sous-reglage { border-top: 1px solid var(--trait); padding-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.sous-reglage > summary { cursor: pointer; font-size: 15px; font-weight: 600; color: var(--ardoise); min-height: 44px; display: flex; align-items: center; }
+.sous-reglage[open] { gap: 12px; }
+.liaison { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.liaison img { background: #fff; border-radius: 12px; max-width: 100%; height: auto; }
+.viseur { width: 100%; max-width: 360px; aspect-ratio: 1; object-fit: cover; border-radius: 16px; background: #000; }
+.phrase { font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.04em; user-select: all; }
