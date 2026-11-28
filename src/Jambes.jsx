@@ -47,7 +47,7 @@ export default function Jambes({ onFin }) {
   const sem = agenda().filter((n) => n.jambes != null && new Date(n.date + 'T12:00').getTime() > Date.now() - 7 * JOUR)
   const genantes = sem.filter((n) => n.jambes >= 5).length
   const lecture = lireFer(fer)
-  const rappel = fer && lecture?.ton === 'alerte' && Date.now() - new Date(fer.date + 'T12:00').getTime() > 80 * JOUR
+  const rappel = fer && fer.ferritine <= 300 && lecture?.ton === 'alerte' && Date.now() - new Date(fer.date + 'T12:00').getTime() > 80 * JOUR
   const coucherHabituel = coucherMedian()
   const limiteCafe = coucherHabituel ? enHeure(Math.floor((enMinutes(coucherHabituel) - 540) / 30) * 30) : null
 
