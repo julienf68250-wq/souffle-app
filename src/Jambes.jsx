@@ -110,13 +110,29 @@ export default function Jambes({ onFin }) {
         <li>Contre les nausées : Primpéran (métoclopramide). Les neuroleptiques.</li>
         <li>Certains antidépresseurs, surtout la mirtazapine.</li>
       </ul>
+      <h3 className="titre-section">3. Quand demander un traitement</h3>
       <p className="aide">
-        Si on te propose un traitement contre les jambes : les recommandations américaines 2024 déconseillent désormais en premier choix les agonistes
-        dopaminergiques (ropinirole, pramipexole, rotigotine), car ils peuvent aggraver le syndrome avec le temps. Si tu en prends et que les jambes
-        commencent plus tôt dans la journée ou touchent les bras, parles-en au médecin.
+        Des jambes gênantes 2 nuits ou plus par semaine, depuis plusieurs semaines : un traitement est justifié. Ce n’est pas un échec, c’est le seuil des
+        recommandations.
+        {genantes >= 2 && ` C’est ton cas cette semaine (${genantes} nuits sur ${sem.length}).`}
       </p>
+      <ul className="signes">
+        <li>
+          <b>En premier (recommandations américaines 2024)</b> : gabapentine ou prégabaline, le soir. En France, elles sont prescrites hors autorisation pour
+          ce syndrome, et la prégabaline demande une ordonnance sécurisée. Effets fréquents : somnolence, vertiges.
+        </li>
+        <li>
+          <b>Souvent proposés en France</b> : ropinirole, pramipexole, rotigotine, les seuls autorisés ici pour ce syndrome. Ils sont désormais déconseillés
+          en premier choix : avec les années, ils aggravent le syndrome chez une partie des patients. Si tu en prends, la plus petite dose, jamais augmentée
+          seul ; si les jambes commencent plus tôt dans la journée ou touchent les bras, parles-en au médecin.
+        </li>
+        <li>
+          <b>À apporter</b> : le nombre de nuits gênantes par semaine (cette page le compte) et ta dernière prise de sang. Si ton médecin hésite, demande une
+          consultation du sommeil ou un neurologue.
+        </li>
+      </ul>
 
-      <h3 className="titre-section">3. Ce qui aide, au quotidien</h3>
+      <h3 className="titre-section">4. Ce qui aide, au quotidien</h3>
       <ul className="signes">
         <li>
           <b>Marcher et renforcer les jambes</b>, plutôt avant 17 h, sans effort intense le soir. Dans un essai, la gêne a baissé d’environ 40 % en 6 semaines.
@@ -137,7 +153,7 @@ export default function Jambes({ onFin }) {
         </li>
       </ul>
 
-      <h3 className="titre-section">4. Ce qui ne marche pas</h3>
+      <h3 className="titre-section">5. Ce qui ne marche pas</h3>
       <ul className="signes">
         <li>Les « fréquences qui guérissent » (528 Hz, 432 Hz, Rife) : aucune preuve.</li>
         <li>Les sons et les vibrations du téléphone : aucune étude sur les jambes. Un iPhone ne vibre pas comme les coussins testés.</li>
